@@ -1,4 +1,4 @@
-/* Northfare — interactions & FR/EN translation */
+/* Northfare — interactions, motion & FR/EN translation */
 (function () {
   "use strict";
 
@@ -13,24 +13,21 @@
 
     "hero.eyebrow": "Travel Tech · Morocco",
     "hero.title": "Technology that moves travel forward.",
-    "hero.lead": "Northfare gives travel agencies, transport operators and companies the tools to sell, manage and distribute travel services — on a single platform.",
+    "hero.lead": "Northfare gives travel agencies, transport operators and companies one platform to sell, manage and distribute their travel services.",
     "hero.cta1": "Request a demo",
-    "hero.cta2": "Explore our solutions",
+    "hero.cta2": "Explore the platform",
     "hero.chip1": "Travel agencies",
     "hero.chip2": "Transport operators",
     "hero.chip3": "Companies",
 
-    "mock.from": "From",
-    "mock.to": "To",
-    "mock.tab1": "Flights",
-    "mock.tab2": "Hotels",
-    "mock.tab3": "Train & bus",
-    "mock.direct": "Direct · 50 min",
-    "mock.s1": "Bookings",
-    "mock.s2": "Connected channels",
-    "mock.badgeT": "Booking confirmed",
-    "mock.badgeS": "Ticket issued automatically",
+    "mq.1": "Booking engine",
+    "mq.2": "Distribution & API",
+    "mq.3": "Back office",
+    "mq.4": "Transport ticketing",
+    "mq.5": "Business travel",
+    "mq.6": "Payments & resellers",
 
+    "tile.more": "Learn more",
     "clients.eyebrow": "Who it's for",
     "clients.title": "One platform, three travel businesses.",
     "clients.a.t": "Travel agencies",
@@ -70,7 +67,6 @@
     "why.eyebrow": "Why Northfare",
     "why.title": "Built for the Moroccan market, open to the world.",
     "why.lead": "A local team that understands travel in Morocco and builds tools that meet international standards.",
-    "why.cta": "Let's talk about your project",
     "why.1.t": "Local",
     "why.1.d": "Pricing in dirhams, interface in French, Arabic and English, support from Morocco.",
     "why.2.t": "Modular",
@@ -79,6 +75,9 @@
     "why.3.d": "An API-first architecture to link your suppliers, tools and partners.",
     "why.4.t": "Your brand",
     "why.4.d": "Your customers see your name, your colours and your domain — not ours.",
+
+    "stmt.text": "Travel begins long before departure. We build the technology that makes it simple to sell, smooth to manage and easy to distribute.",
+    "stmt.cta": "Let's talk about your project",
 
     "contact.eyebrow": "Contact",
     "contact.title": "Let's talk about your project.",
@@ -112,9 +111,13 @@
     fr: { title: "Northfare — Technologie du voyage au Maroc" },
     en: { title: "Northfare — Travel technology in Morocco" }
   };
-
   var CONTACT_EMAIL = "contact@northfare.ma"; // fictive: replace with the real address
 
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hasGsap = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined" && !reduceMotion;
+  if (hasGsap) gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- i18n ---------- */
   var nodes = document.querySelectorAll("[data-i18n]");
   var FR = {};
   nodes.forEach(function (el) { FR[el.getAttribute("data-i18n")] = el.textContent; });
@@ -124,7 +127,7 @@
 
   function t(key) { return (DICT[current] && DICT[current][key]) || FR[key] || ""; }
 
-  function setLang(lang) {
+  function setLang(lang, animate) {
     if (!DICT[lang]) lang = "fr";
     current = lang;
     nodes.forEach(function (el) {
@@ -139,18 +142,43 @@
     var note = document.getElementById("formNote");
     if (note) { note.textContent = ""; note.className = "form__note"; }
     try { localStorage.setItem("nf-lang", lang); } catch (e) { /* storage unavailable */ }
+    splitTitle(animate);
+  }
+
+  /* ---------- Hero title word reveal ---------- */
+  var title = document.querySelector("[data-split]");
+  function splitTitle(animate) {
+    if (!title) return;
+    var text = title.textContent.trim();
+    title.setAttribute("aria-label", text);
+    title.innerHTML = text.split(" ").map(function (w) {
+      return '<span class="w" aria-hidden="true"><span>' + w + "</span></span>";
+    }).join(" ");
+    if (hasGsap && animate !== false) {
+      gsap.fromTo(title.querySelectorAll(".w > span"),
+        { yPercent: 110, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: 1.1, ease: "power4.out", stagger: 0.07, delay: 0.15 });
+    }
   }
 
   document.querySelectorAll(".lang button").forEach(function (b) {
-    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang"), true); });
   });
 
   var saved = null;
   try { saved = localStorage.getItem("nf-lang"); } catch (e) { /* ignore */ }
-  if (!saved && /^en\b/i.test(navigator.language || "") ) saved = "en";
-  if (saved && saved !== "fr") setLang(saved);
+  if (!saved && /^en\b/i.test(navigator.language || "")) saved = "en";
+  if (saved && saved !== "fr") setLang(saved, true); else splitTitle(true);
 
-  // Mobile menu
+  /* ---------- Hero intro ---------- */
+  if (hasGsap) {
+    gsap.from([".hero .eyebrow", ".hero__lead", ".hero__ctas", ".hero__foot"], {
+      y: 24, opacity: 0, duration: 1, ease: "power3.out", stagger: 0.12, delay: 0.5
+    });
+    gsap.from(".nav__inner", { y: -16, opacity: 0, duration: .9, ease: "power3.out", delay: 0.2 });
+  }
+
+  /* ---------- Mobile menu ---------- */
   var burger = document.getElementById("burger");
   var links = document.getElementById("navLinks");
   burger.addEventListener("click", function () {
@@ -164,24 +192,71 @@
     });
   });
 
-  // Nav border on scroll
+  /* ---------- Nav state + progress ---------- */
   var nav = document.querySelector(".nav");
-  function onScroll() { nav.classList.toggle("is-scrolled", window.scrollY > 8); }
+  var progress = document.getElementById("progress");
+  function onScroll() {
+    nav.classList.toggle("is-scrolled", window.scrollY > 24);
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = "scaleX(" + (max > 0 ? window.scrollY / max : 0) + ")";
+  }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  // Reveal on scroll
-  var targets = document.querySelectorAll(".section__head, .card, .feature, .steps li, .why__list li, .form");
-  if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add("is-visible"); io.unobserve(en.target); }
+  /* ---------- Scroll reveals ---------- */
+  if (hasGsap) {
+    document.querySelectorAll("[data-reveal]").forEach(function (el) {
+      gsap.from(el, {
+        y: 40, opacity: 0, duration: 1, ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 85%", once: true }
       });
-    }, { threshold: 0.12 });
-    targets.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+    });
+    document.querySelectorAll("[data-stagger]").forEach(function (group) {
+      gsap.from(group.children, {
+        y: 40, opacity: 0, duration: .9, ease: "power3.out", stagger: 0.1,
+        scrollTrigger: { trigger: group, start: "top 82%", once: true }
+      });
+    });
+    // Parallax on the statement background and hero video
+    document.querySelectorAll("[data-parallax]").forEach(function (el) {
+      gsap.to(el, { yPercent: 18, ease: "none",
+        scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true } });
+    });
+    gsap.to(".hero__video", { yPercent: 14, ease: "none",
+      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
   }
 
-  // Contact form: no backend yet, so it opens a pre-filled email.
+  /* ---------- Lazy videos: load & play only when visible ---------- */
+  var lazyVideos = document.querySelectorAll("[data-lazy-video]");
+  if ("IntersectionObserver" in window) {
+    var vio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var v = en.target;
+        if (en.isIntersecting) {
+          if (!v.dataset.loaded) {
+            v.querySelectorAll("source[data-src]").forEach(function (s) { s.src = s.dataset.src; });
+            v.load(); v.dataset.loaded = "1";
+          }
+          var p = v.play(); if (p && p.catch) p.catch(function () {});
+        } else if (v.dataset.loaded) {
+          v.pause();
+        }
+      });
+    }, { rootMargin: "200px 0px" });
+    lazyVideos.forEach(function (v) { vio.observe(v); });
+  } else {
+    lazyVideos.forEach(function (v) {
+      v.querySelectorAll("source[data-src]").forEach(function (s) { s.src = s.dataset.src; });
+      v.load();
+    });
+  }
+  // Respect reduced motion: don't autoplay the hero video.
+  if (reduceMotion) {
+    var hv = document.querySelector(".hero__video");
+    if (hv) { hv.removeAttribute("autoplay"); hv.pause(); }
+  }
+
+  /* ---------- Contact form: opens a pre-filled email (no backend yet) ---------- */
   var form = document.getElementById("contactForm");
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -192,13 +267,14 @@
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       note.textContent = t("form.err"); note.className = "form__note err"; return;
     }
-    var subject = "Northfare — " + (current === "en" ? "Demo request" : "Demande de démo") + " — " + (d.get("company") || name);
+    var en = current === "en";
+    var subject = "Northfare — " + (en ? "Demo request" : "Demande de démo") + " — " + (d.get("company") || name);
     var body = [
-      (current === "en" ? "Name" : "Nom") + ": " + name,
-      (current === "en" ? "Company" : "Société") + ": " + (d.get("company") || "-"),
+      (en ? "Name" : "Nom") + ": " + name,
+      (en ? "Company" : "Société") + ": " + (d.get("company") || "-"),
       "Email: " + email,
-      (current === "en" ? "Phone" : "Téléphone") + ": " + (d.get("phone") || "-"),
-      (current === "en" ? "Profile" : "Profil") + ": " + d.get("type"),
+      (en ? "Phone" : "Téléphone") + ": " + (d.get("phone") || "-"),
+      (en ? "Profile" : "Profil") + ": " + d.get("type"),
       "",
       String(d.get("message") || "")
     ].join("\n");
