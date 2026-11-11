@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northfare — Technologie du voyage au Maroc</title>
+  <meta name="description" content="Northfare conçoit des solutions technologiques pour les agences de voyages, les opérateurs de transport et les entreprises au Maroc : vendre, gérer et distribuer des prestations de voyage.">
+  <meta name="theme-color" content="#0B1B2B">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Northfare — Travel Tech au Maroc">
+  <meta property="og:description" content="Solutions technologiques pour vendre, gérer et distribuer des prestations de voyage.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="nav" id="top">
+  <div class="container nav__inner">
+    <a href="#top" class="nav__brand" aria-label="Northfare">
+      <img src="assets/logo/northfare-logo.svg" alt="Northfare" height="34">
+    </a>
+    <nav class="nav__links" id="navLinks" aria-label="Navigation principale">
+      <a href="#solutions" data-i18n="nav.solutions">Solutions</a>
+      <a href="#clients" data-i18n="nav.clients">Pour qui</a>
+      <a href="#methode" data-i18n="nav.method">Méthode</a>
+      <a href="#pourquoi" data-i18n="nav.why">Pourquoi Northfare</a>
+      <a href="#contact" class="nav__cta-mobile" data-i18n="nav.cta">Demander une démo</a>
+    </nav>
+    <div class="nav__actions">
+      <div class="lang" role="group" aria-label="Langue / Language">
+        <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a href="#contact" class="btn btn--primary btn--sm nav__cta" data-i18n="nav.cta">Demander une démo</a>
+      <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Travel Tech · Maroc</p>
+        <h1 data-i18n="hero.title">La technologie qui fait avancer le voyage.</h1>
+        <p class="lead" data-i18n="hero.lead">Northfare fournit aux agences de voyages, aux opérateurs de transport et aux entreprises les outils pour commercialiser, gérer et distribuer leurs prestations de voyage — sur une seule plateforme.</p>
+        <div class="hero__ctas">
+          <a href="#contact" class="btn btn--primary" data-i18n="hero.cta1">Demander une démo</a>
+          <a href="#solutions" class="btn btn--ghost" data-i18n="hero.cta2">Découvrir nos solutions</a>
+        </div>
+        <ul class="hero__chips">
+          <li data-i18n="hero.chip1">Agences de voyages</li>
+          <li data-i18n="hero.chip2">Opérateurs de transport</li>
+          <li data-i18n="hero.chip3">Entreprises</li>
+        </ul>
+      </div>
+
+      <div class="hero__visual" aria-hidden="true">
+        <div class="mock">
+          <div class="mock__bar"><span></span><span></span><span></span></div>
+          <div class="mock__body">
+            <div class="mock__search">
+              <div class="field"><small data-i18n="mock.from">Départ</small><strong>Casablanca (CMN)</strong></div>
+              <svg class="mock__swap" viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="field"><small data-i18n="mock.to">Arrivée</small><strong>Marrakech (RAK)</strong></div>
+            </div>
+            <div class="mock__row">
+              <div class="pill pill--active" data-i18n="mock.tab1">Vols</div>
+              <div class="pill" data-i18n="mock.tab2">Hôtels</div>
+              <div class="pill" data-i18n="mock.tab3">Train & bus</div>
+            </div>
+            <div class="result">
+              <div class="result__line"><b>08:15</b><i></i><b>09:05</b></div>
+              <div class="result__meta"><span data-i18n="mock.direct">Direct · 50 min</span><strong>— MAD</strong></div>
+            </div>
+            <div class="result result--dim">
+              <div class="result__line"><b>12:40</b><i></i><b>13:30</b></div>
+              <div class="result__meta"><span data-i18n="mock.direct">Direct · 50 min</span><strong>— MAD</strong></div>
+            </div>
+            <div class="mock__stats">
+              <div><small data-i18n="mock.s1">Réservations</small><div class="spark"><i style="height:30%"></i><i style="height:45%"></i><i style="height:40%"></i><i style="height:60%"></i><i style="height:55%"></i><i style="height:75%"></i><i style="height:90%"></i></div></div>
+              <div><small data-i18n="mock.s2">Canaux connectés</small><div class="dots"><i></i><i></i><i></i><i></i><i class="off"></i></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="float-card">
+          <img src="assets/logo/northfare-icon.svg" alt="" width="32" height="32">
+          <div><strong data-i18n="mock.badgeT">Réservation confirmée</strong><small data-i18n="mock.badgeS">Billet émis automatiquement</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <section class="section" id="clients">
+    <div class="container">
+      <div class="section__head">
+        <p class="eyebrow" data-i18n="clients.eyebrow">Pour qui</p>
+        <h2 data-i18n="clients.title">Une plateforme, trois métiers du voyage.</h2>
+      </div>
+      <div class="cards cards--3">
+        <article class="card">
+          <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6" /></svg></div>
+          <h3 data-i18n="clients.a.t">Agences de voyages</h3>
+          <p data-i18n="clients.a.d">Vendez vols, hôtels, circuits et packages en ligne et au comptoir, avec un back-office qui centralise réservations, clients et facturation.</p>
+        </article>
+        <article class="card">
+          <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M6 17h12M6 17a2 2 0 1 1-4 0V7a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 1 1-4 0M2 11h20M7 7h2M15 7h2" /></svg></div>
+          <h3 data-i18n="clients.b.t">Opérateurs de transport</h3>
+          <p data-i18n="clients.b.d">Mettez votre inventaire en vente sur votre site et chez vos revendeurs : billetterie, gestion des places, tarifs et suivi des ventes en temps réel.</p>
+        </article>
+        <article class="card">
+          <div class="card__icon"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" /></svg></div>
+          <h3 data-i18n="clients.c.t">Entreprises</h3>
+          <p data-i18n="clients.c.d">Organisez les déplacements de vos équipes : réservation en libre-service, politique voyage, circuits de validation et suivi des dépenses.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTIONS -->
+  <section class="section section--tint" id="solutions">
+    <div class="container">
+      <div class="section__head">
+        <p class="eyebrow" data-i18n="sol.eyebrow">Solutions</p>
+        <h2 data-i18n="sol.title">Tout ce qu'il faut pour vendre et gérer le voyage.</h2>
+        <p class="section__lead" data-i18n="sol.lead">Des modules qui fonctionnent ensemble ou séparément, selon votre activité.</p>
+      </div>
+      <div class="cards cards--3">
+        <article class="feature">
+          <span class="feature__num">01</span>
+          <h3 data-i18n="sol.1.t">Moteur de réservation</h3>
+          <p data-i18n="sol.1.d">Un moteur B2C et B2B pour vols, hébergements, transferts et packages, intégrable à votre site en marque blanche.</p>
+        </article>
+        <article class="feature">
+          <span class="feature__num">02</span>
+          <h3 data-i18n="sol.2.t">Distribution & connectivité</h3>
+          <p data-i18n="sol.2.d">Connectez vos fournisseurs et vos canaux de vente via API pour accéder à plus de contenu et distribuer le vôtre plus loin.</p>
+        </article>
+        <article class="feature">
+          <span class="feature__num">03</span>
+          <h3 data-i18n="sol.3.t">Back-office & gestion</h3>
+          <p data-i18n="sol.3.d">Dossiers clients, réservations, facturation, commissions et reporting réunis dans un seul outil.</p>
+        </article>
+        <article class="feature">
+          <span class="feature__num">04</span>
+          <h3 data-i18n="sol.4.t">Billetterie transport</h3>
+          <p data-i18n="sol.4.d">Gestion des lignes, horaires, places et tarifs, avec vente en ligne, au guichet et via vos revendeurs.</p>
+        </article>
+        <article class="feature">
+          <span class="feature__num">05</span>
+          <h3 data-i18n="sol.5.t">Voyage d'affaires</h3>
+          <p data-i18n="sol.5.d">Un outil de réservation pour les collaborateurs, avec règles de voyage, validations et tableaux de bord de dépenses.</p>
+        </article>
+        <article class="feature">
+          <span class="feature__num">06</span>
+          <h3 data-i18n="sol.6.t">Paiement & réseau de revendeurs</h3>
+          <p data-i18n="sol.6.d">Encaissement en ligne, comptes agents, crédits et commissions pour animer votre réseau de distribution.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHODE -->
+  <section class="section" id="methode">
+    <div class="container">
+      <div class="section__head">
+        <p class="eyebrow" data-i18n="how.eyebrow">Méthode</p>
+        <h2 data-i18n="how.title">De la première discussion à la mise en ligne.</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="steps__n">1</span>
+          <h3 data-i18n="how.1.t">Diagnostic</h3>
+          <p data-i18n="how.1.d">Nous étudions votre activité, vos fournisseurs et vos canaux de vente.</p>
+        </li>
+        <li>
+          <span class="steps__n">2</span>
+          <h3 data-i18n="how.2.t">Configuration</h3>
+          <p data-i18n="how.2.d">Nous paramétrons les modules, vos tarifs, votre marque et vos connexions.</p>
+        </li>
+        <li>
+          <span class="steps__n">3</span>
+          <h3 data-i18n="how.3.t">Lancement</h3>
+          <p data-i18n="how.3.d">Vos équipes sont formées et votre plateforme est mise en ligne.</p>
+        </li>
+        <li>
+          <span class="steps__n">4</span>
+          <h3 data-i18n="how.4.t">Accompagnement</h3>
+          <p data-i18n="how.4.d">Un support réactif et des évolutions continues pour faire grandir vos ventes.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- POURQUOI -->
+  <section class="section section--dark" id="pourquoi">
+    <div class="container why">
+      <div class="why__intro">
+        <p class="eyebrow eyebrow--light" data-i18n="why.eyebrow">Pourquoi Northfare</p>
+        <h2 data-i18n="why.title">Pensé pour le marché marocain, ouvert sur le monde.</h2>
+        <p data-i18n="why.lead">Une équipe locale qui connaît les réalités du voyage au Maroc et qui construit des outils à la hauteur des standards internationaux.</p>
+        <a href="#contact" class="btn btn--light" data-i18n="why.cta">Parlons de votre projet</a>
+      </div>
+      <ul class="why__list">
+        <li><strong data-i18n="why.1.t">Local</strong><span data-i18n="why.1.d">Tarification en dirhams, interface en français, arabe et anglais, support depuis le Maroc.</span></li>
+        <li><strong data-i18n="why.2.t">Modulaire</strong><span data-i18n="why.2.d">Commencez par un module, ajoutez les autres quand votre activité grandit.</span></li>
+        <li><strong data-i18n="why.3.t">Connecté</strong><span data-i18n="why.3.d">Une architecture API pour relier vos fournisseurs, vos outils et vos partenaires.</span></li>
+        <li><strong data-i18n="why.4.t">À votre marque</strong><span data-i18n="why.4.d">Vos clients voient votre nom, vos couleurs et votre domaine — pas les nôtres.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="container contact">
+      <div class="contact__info">
+        <p class="eyebrow" data-i18n="contact.eyebrow">Contact</p>
+        <h2 data-i18n="contact.title">Parlons de votre projet.</h2>
+        <p data-i18n="contact.lead">Dites-nous en quelques mots ce que vous souhaitez vendre ou gérer. Nous revenons vers vous rapidement pour organiser une démonstration.</p>
+        <!-- COORDONNÉES FICTIVES : à remplacer par les vraies -->
+        <ul class="contact__list">
+          <li><span data-i18n="contact.email">E-mail</span><a href="mailto:contact@northfare.ma">contact@northfare.ma</a></li>
+          <li><span data-i18n="contact.phone">Téléphone</span><a href="tel:+212500000000">+212 5 00 00 00 00</a></li>
+          <li><span data-i18n="contact.address">Adresse</span><span>Casablanca, Maroc</span></li>
+        </ul>
+      </div>
+      <form class="form" id="contactForm" novalidate>
+        <div class="form__row">
+          <label><span data-i18n="form.name">Nom complet</span><input name="name" required autocomplete="name"></label>
+          <label><span data-i18n="form.company">Société</span><input name="company" autocomplete="organization"></label>
+        </div>
+        <div class="form__row">
+          <label><span data-i18n="form.email">E-mail professionnel</span><input name="email" type="email" required autocomplete="email"></label>
+          <label><span data-i18n="form.phone">Téléphone</span><input name="phone" type="tel" autocomplete="tel"></label>
+        </div>
+        <label><span data-i18n="form.type">Vous êtes</span>
+          <select name="type">
+            <option data-i18n="form.opt1">Agence de voyages</option>
+            <option data-i18n="form.opt2">Opérateur de transport</option>
+            <option data-i18n="form.opt3">Entreprise</option>
+            <option data-i18n="form.opt4">Autre</option>
+          </select>
+        </label>
+        <label><span data-i18n="form.msg">Votre besoin</span><textarea name="message" rows="4"></textarea></label>
+        <button type="submit" class="btn btn--primary btn--block" data-i18n="form.submit">Envoyer la demande</button>
+        <p class="form__note" id="formNote" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <img src="assets/logo/northfare-logo-white.svg" alt="Northfare" height="30">
+      <p data-i18n="footer.tag">La technologie qui fait avancer le voyage.</p>
+    </div>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="#solutions" data-i18n="nav.solutions">Solutions</a>
+      <a href="#clients" data-i18n="nav.clients">Pour qui</a>
+      <a href="#methode" data-i18n="nav.method">Méthode</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <p class="footer__copy">© <span id="year">2026</span> Northfare. <span data-i18n="footer.rights">Tous droits réservés.</span></p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

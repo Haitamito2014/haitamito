@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northfare — Charte graphique</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; color: #0B1B2B; background: #fff; line-height: 1.6; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 56px 16px; }
+    h1 { font-size: 2.4rem; letter-spacing: -.02em; margin: 0 0 8px; }
+    h2 { font-size: 1.3rem; margin: 56px 0 16px; padding-top: 24px; border-top: 1px solid #E3E8F0; }
+    p { color: #3A4A5C; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .tile { border: 1px solid #E3E8F0; border-radius: 16px; padding: 32px; display: grid; place-items: center; min-height: 140px; }
+    .tile.dark { background: #0B1B2B; border-color: #0B1B2B; }
+    .tile.tint { background: #F5F7FB; }
+    .tile img { max-height: 64px; width: auto; }
+    .sw { border-radius: 16px; overflow: hidden; border: 1px solid #E3E8F0; }
+    .sw div:first-child { height: 96px; }
+    .sw div:last-child { padding: 12px 16px; font-size: .9rem; }
+    .sw b { display: block; }
+    code { background: #F5F7FB; padding: 2px 6px; border-radius: 6px; }
+    ul { color: #3A4A5C; }
+    a { color: #2F5BFF; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <img src="assets/logo/northfare-logo.svg" alt="Northfare" height="40">
+  <h1 style="margin-top:32px">Charte graphique</h1>
+  <p>Règles d'utilisation de l'identité visuelle Northfare. <a href="index.html">← Retour au site</a></p>
+
+  <h2>Le symbole</h2>
+  <p>Un « N » dont la branche droite se prolonge en flèche vers le nord : la direction, le mouvement, la progression. Le point orange est l'étoile polaire, celle qui guide le voyageur.</p>
+
+  <h2>Versions du logo</h2>
+  <div class="grid">
+    <div class="tile"><img src="assets/logo/northfare-logo.svg" alt="Logo principal"></div>
+    <div class="tile dark"><img src="assets/logo/northfare-logo-white.svg" alt="Logo sur fond sombre"></div>
+    <div class="tile tint"><img src="assets/logo/northfare-logo-stacked.svg" alt="Logo empilé" style="max-height:120px"></div>
+    <div class="tile"><img src="assets/logo/northfare-icon.svg" alt="Icône"></div>
+    <div class="tile"><img src="assets/logo/northfare-icon-mono.svg" alt="Icône monochrome"></div>
+    <div class="tile tint"><img src="assets/logo/northfare-wordmark.svg" alt="Logotype seul" style="max-height:40px"></div>
+  </div>
+  <ul>
+    <li>Zone de protection : laisser autour du logo un espace au moins égal à la moitié de la hauteur de l'icône.</li>
+    <li>Taille minimale : 24 px de haut pour le logo horizontal, 16 px pour l'icône seule.</li>
+    <li>Ne pas déformer, recolorer, incliner ou ajouter d'ombre au logo.</li>
+    <li>Sur fond sombre ou photo, utiliser la version blanche.</li>
+  </ul>
+
+  <h2>Couleurs</h2>
+  <div class="grid">
+    <div class="sw"><div style="background:#2F5BFF"></div><div><b>Bleu Northfare</b>#2F5BFF · couleur principale</div></div>
+    <div class="sw"><div style="background:#0B1B2B"></div><div><b>Encre</b>#0B1B2B · textes, fonds sombres</div></div>
+    <div class="sw"><div style="background:#FF7A45"></div><div><b>Étoile polaire</b>#FF7A45 · accent ponctuel</div></div>
+    <div class="sw"><div style="background:#F5F7FB"></div><div><b>Brume</b>#F5F7FB · fonds clairs</div></div>
+  </div>
+  <p>L'orange reste un accent : petits éléments uniquement (point, puce, indicateur), jamais en aplat principal.</p>
+
+  <h2>Typographie</h2>
+  <p style="font-size:2rem;font-weight:800;color:#0B1B2B;margin:0">Inter ExtraBold — Titres</p>
+  <p style="font-size:1.1rem">Inter Regular — Textes courants. Police gratuite (licence SIL Open Font), disponible sur Google Fonts.</p>
+
+  <h2>Fichiers</h2>
+  <ul>
+    <li>Vectoriels (SVG) : <code>assets/logo/</code></li>
+    <li>Images haute résolution (PNG transparent) : <code>assets/logo/png/</code></li>
+    <li>Favicon : <code>favicon.svg</code></li>
+  </ul>
+</div>
+</body>
+</html>
