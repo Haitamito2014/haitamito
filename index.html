@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+<a href="#main" class="skip-link" data-i18n="skip">Aller au contenu</a>
 <div class="progress" id="progress" aria-hidden="true"></div>
 
 <header class="nav" id="top">
@@ -43,7 +44,7 @@
   </div>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
   <!-- HERO -->
   <section class="hero" id="hero">
     <video class="hero__video" autoplay muted loop playsinline preload="metadata" poster="assets/media/hero-poster.webp" aria-hidden="true">
@@ -187,7 +188,7 @@
   <section class="section section--method" id="methode">
     <div class="container method">
       <div class="method__media" data-reveal>
-        <video muted loop playsinline preload="none" poster="assets/media/journey-poster.webp" data-lazy-video aria-hidden="true">
+        <video muted loop playsinline preload="none" poster="assets/media/journey-poster.webp" width="1280" height="720" data-lazy-video aria-hidden="true">
           <source data-src="assets/media/journey.mp4" type="video/mp4">
         </video>
       </div>
@@ -252,11 +253,11 @@
       </div>
       <form class="form" id="contactForm" novalidate data-reveal>
         <div class="form__row">
-          <label><span data-i18n="form.name">Nom complet</span><input name="name" required autocomplete="name"></label>
+          <label><span data-i18n="form.name">Nom complet</span><input name="name" required autocomplete="name" aria-describedby="err-name"><small class="form__err" id="err-name"></small></label>
           <label><span data-i18n="form.company">Société</span><input name="company" autocomplete="organization"></label>
         </div>
         <div class="form__row">
-          <label><span data-i18n="form.email">E-mail professionnel</span><input name="email" type="email" required autocomplete="email"></label>
+          <label><span data-i18n="form.email">E-mail professionnel</span><input name="email" type="email" required autocomplete="email" aria-describedby="err-email"><small class="form__err" id="err-email"></small></label>
           <label><span data-i18n="form.phone">Téléphone</span><input name="phone" type="tel" autocomplete="tel"></label>
         </div>
         <label><span data-i18n="form.type">Vous êtes</span>

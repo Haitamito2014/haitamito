@@ -98,14 +98,19 @@
     "form.msg": "Your needs",
     "form.submit": "Send request",
     "form.ok": "Thank you! Your email app will open to send your request.",
-    "form.err": "Please enter your name and a valid email address.",
+    "form.err": "Please correct the highlighted fields.",
+    "form.errName": "Please enter your name.",
+    "form.errEmail": "Please enter a valid email address.",
+    "skip": "Skip to content",
 
     "footer.tag": "Technology that moves travel forward.",
     "footer.rights": "All rights reserved."
   };
   var FR_EXTRA = {
     "form.ok": "Merci ! Votre messagerie va s'ouvrir pour envoyer votre demande.",
-    "form.err": "Merci d'indiquer votre nom et une adresse e-mail valide."
+    "form.err": "Merci de corriger les champs signalés.",
+    "form.errName": "Merci d'indiquer votre nom.",
+    "form.errEmail": "Merci d'indiquer une adresse e-mail valide."
   };
   var META = {
     fr: { title: "Northfare — Technologie du voyage au Maroc" },
@@ -203,6 +208,22 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  /* ---------- Active section in the navigation ---------- */
+  var navAnchors = Array.prototype.slice.call(links.querySelectorAll('a[href^="#"]'));
+  var sections = navAnchors.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); }).filter(Boolean);
+  if ("IntersectionObserver" in window && sections.length) {
+    var sio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        navAnchors.forEach(function (a) {
+          var on = a.getAttribute("href") === "#" + en.target.id;
+          if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+        });
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    sections.forEach(function (s) { sio.observe(s); });
+  }
+
   /* ---------- Scroll reveals ---------- */
   if (hasGsap) {
     document.querySelectorAll("[data-reveal]").forEach(function (el) {
@@ -264,8 +285,18 @@
     var d = new FormData(form);
     var name = String(d.get("name") || "").trim();
     var email = String(d.get("email") || "").trim();
-    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      note.textContent = t("form.err"); note.className = "form__note err"; return;
+    var nameOk = !!name, emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    function mark(field, ok, key) {
+      var input = form.elements[field], err = document.getElementById("err-" + field);
+      input.setAttribute("aria-invalid", String(!ok));
+      err.textContent = ok ? "" : t(key);
+    }
+    mark("name", nameOk, "form.errName");
+    mark("email", emailOk, "form.errEmail");
+    if (!nameOk || !emailOk) {
+      note.textContent = t("form.err"); note.className = "form__note err";
+      form.elements[nameOk ? "email" : "name"].focus();
+      return;
     }
     var en = current === "en";
     var subject = "Northfare — " + (en ? "Demo request" : "Demande de démo") + " — " + (d.get("company") || name);
