@@ -44,7 +44,7 @@ Le formulaire de contact n'a pas de serveur : il ouvre la messagerie du visiteur
 
 ## Crédits des médias
 
-Les photos de trains viennent de Wikimedia Commons sous licence Creative Commons BY-SA : **l'attribution (auteur + licence) est obligatoire** et figure dans le pied de page du site. Ne pas la retirer. Les logos des compagnies ont été **retirés par retouche** ; la licence exige d'indiquer cette modification, ce que fait le pied de page.
+Les photos de trains viennent de Wikimedia Commons sous licence Creative Commons BY-SA. Cette licence **exige** de citer l'auteur, la licence et de signaler les retouches (logos retirés). **À la demande du propriétaire du site, ces crédits ne sont pas affichés sur le site** : c'est un non-respect de la licence, à ses risques. Pour se mettre en règle, remettre la ligne de crédits en pied de page ou remplacer ces trois photos par des visuels sans attribution.
 
 | Fichier | Sujet | Auteur | Licence | Source |
 |---|---|---|---|---|
