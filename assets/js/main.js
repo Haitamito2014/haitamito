@@ -243,7 +243,7 @@
       gsap.to(el, { yPercent: 18, ease: "none",
         scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true } });
     });
-    gsap.to(".hero__video", { yPercent: 14, ease: "none",
+    gsap.to(".hero__media", { yPercent: 14, ease: "none",
       scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
   }
 
@@ -270,11 +270,6 @@
       v.querySelectorAll("source[data-src]").forEach(function (s) { s.src = s.dataset.src; });
       v.load();
     });
-  }
-  // Respect reduced motion: don't autoplay the hero video.
-  if (reduceMotion) {
-    var hv = document.querySelector(".hero__video");
-    if (hv) { hv.removeAttribute("autoplay"); hv.pause(); }
   }
 
   /* ---------- Contact form: opens a pre-filled email (no backend yet) ---------- */

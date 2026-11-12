@@ -9,12 +9,12 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="Northfare — Travel Tech au Maroc">
   <meta property="og:description" content="Solutions technologiques pour vendre, gérer et distribuer des prestations de voyage.">
-  <meta property="og:image" content="assets/media/hero-poster.webp">
+  <meta property="og:image" content="assets/img/hero-plane.webp">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="assets/media/hero-poster.webp">
+  <link rel="preload" as="image" href="assets/img/hero-plane.webp">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -47,9 +47,7 @@
 <main id="main" tabindex="-1">
   <!-- HERO -->
   <section class="hero" id="hero">
-    <video class="hero__video" autoplay muted loop playsinline preload="metadata" poster="assets/media/hero-poster.webp" aria-hidden="true">
-      <source src="assets/media/hero.mp4" type="video/mp4">
-    </video>
+    <div class="hero__media" aria-hidden="true"><img src="assets/img/hero-plane.webp" alt="" width="2400" height="1350" fetchpriority="high"></div>
     <div class="hero__shade" aria-hidden="true"></div>
     <div class="container hero__content">
       <p class="eyebrow" data-i18n="hero.eyebrow">Travel Tech · Maroc</p>
@@ -106,7 +104,7 @@
           </div>
         </a>
         <a href="#contact" class="tile">
-          <img src="assets/img/airport.webp" alt="Avion de ligne devant un terminal d'aéroport" loading="lazy" width="1600" height="1067">
+          <img src="assets/img/cloudplane.webp" alt="Avion de ligne en approche dans un ciel nuageux" loading="lazy" width="1600" height="1067">
           <div class="tile__body">
             <span class="tile__num">02</span>
             <h3 data-i18n="clients.b.t">Opérateurs de transport</h3>
@@ -188,9 +186,7 @@
   <section class="section section--method" id="methode">
     <div class="container method">
       <div class="method__media" data-reveal>
-        <video muted loop playsinline preload="none" poster="assets/media/journey-poster.webp" width="1280" height="720" data-lazy-video aria-hidden="true">
-          <source data-src="assets/media/journey.mp4" type="video/mp4">
-        </video>
+        <img src="assets/img/airport.webp" alt="Avion de ligne devant un terminal d'aéroport" loading="lazy" width="1600" height="1067">
       </div>
       <div class="method__copy">
         <div class="section__head" data-reveal>

@@ -46,7 +46,7 @@ Le formulaire de contact n'a pas de serveur : il ouvre la messagerie du visiteur
 
 Toutes les photos et vidéos proviennent de banques gratuites dont la licence autorise l'usage commercial sans attribution obligatoire :
 
-- **Vidéos** : Pexels (licence Pexels) — identifiants 2099568 (accueil), 3015510 (méthode), 3129671 (solutions), 3571264 (pourquoi Northfare). Page d'origine : `https://www.pexels.com/video/<identifiant>/`
-- **Photos** : Unsplash (licence Unsplash) — `marrakech`, `kasbah`, `airport`, `wing`, `team`, `office`, `laptop`, `hiker`, `takeoff`. L'identifiant de chaque photo figure dans l'URL d'origine `https://unsplash.com/photos/<identifiant>` ; les identifiants complets sont listés dans l'historique du dépôt.
+- **Vidéos** : Pexels (licence Pexels) — identifiants 3129671 (solutions), 3571264 (pourquoi Northfare). Page d'origine : `https://www.pexels.com/video/<identifiant>/`
+- **Photos** : Unsplash (licence Unsplash) — `hero-plane` (1544016768-982d1554f0b9), `cloudplane` (1570710891163-6d3b5c47248b), `airport` (1569154941061-e231b4725ef1), `marrakech`, `kasbah`, `wing`, `team`, `office`, `laptop`, `hiker`. Les identifiants complets sont dans l'historique du dépôt ; page d'origine `https://unsplash.com/photos/<identifiant>`.
 
 GSAP est utilisé sous sa licence standard gratuite (gsap.com/standard-license), qui couvre les sites commerciaux.
