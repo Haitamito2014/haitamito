@@ -104,7 +104,9 @@
     "skip": "Skip to content",
 
     "footer.tag": "Technology that moves travel forward.",
-    "footer.rights": "All rights reserved."
+    "footer.rights": "All rights reserved.",
+    "footer.credits": "Photo credits:",
+    "footer.credits2": "other visuals: Unsplash and Pexels."
   };
   var FR_EXTRA = {
     "form.ok": "Merci ! Votre messagerie va s'ouvrir pour envoyer votre demande.",

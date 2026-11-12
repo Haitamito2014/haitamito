@@ -44,9 +44,19 @@ Le formulaire de contact n'a pas de serveur : il ouvre la messagerie du visiteur
 
 ## Crédits des médias
 
-Toutes les photos et vidéos proviennent de banques gratuites dont la licence autorise l'usage commercial sans attribution obligatoire :
+Les photos de transport marocain viennent de Wikimedia Commons sous licence Creative Commons : **l'attribution (auteur + licence) est obligatoire** et figure dans le pied de page du site. Ne pas la retirer.
 
-- **Vidéos** : Pexels (licence Pexels) — identifiants 3129671 (solutions), 3571264 (pourquoi Northfare). Page d'origine : `https://www.pexels.com/video/<identifiant>/`
-- **Photos** : Unsplash (licence Unsplash) — `hero-plane` (1544016768-982d1554f0b9), `cloudplane` (1570710891163-6d3b5c47248b), `airport` (1569154941061-e231b4725ef1), `marrakech`, `kasbah`, `wing`, `team`, `office`, `laptop`, `hiker`. Les identifiants complets sont dans l'historique du dépôt ; page d'origine `https://unsplash.com/photos/<identifiant>`.
+| Fichier | Sujet | Auteur | Licence | Source |
+|---|---|---|---|---|
+| `assets/img/alboraq-tanger.webp` | Al Boraq au terminus de Tanger (accueil) | إيان | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:ONCF_Al_Boraq_at_Tangier_Terminus.jpg) |
+| `assets/img/alboraq-arrivee.webp` | Al Boraq en gare de Tanger-Ville | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:22.11.24_Tanger-Ville_1208_(54166318289).jpg) |
+| `assets/img/oncf-train.webp` | Train ONCF E-1474 à Tanger-Ville | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:25.11.24_Tanger_Ville_E-1474_(54166482504).jpg) |
+| `assets/img/ctm-autocar.webp` | Autocar CTM Irizar i6 | Anthony Levrot | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:Irizar_i6_n%C2%B05310_-_Compagnie_de_Transports_au_Maroc_(Chamb%C3%A9ry).jpg) |
+| `assets/img/gare-kenitra.webp` | Gare TGV de Kénitra (non utilisée pour l'instant) | Bertrand Soubeyrand | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:Gare_TGV_Kenitra.jpg) |
+
+Les autres médias viennent de banques gratuites dont la licence autorise l'usage commercial sans attribution :
+
+- **Pexels** (licence Pexels) — photo `rabat-agdal` (10151135) ; vidéos 3044098 (vue depuis le train), 3129671 (réseau, solutions). Page d'origine : `https://www.pexels.com/photo/<id>/` ou `/video/<id>/`
+- **Unsplash** (licence Unsplash) — `marrakech` (1597212618440-806262de4f6b), `cloudplane` (1570710891163-6d3b5c47248b). Page d'origine `https://unsplash.com/photos/<identifiant>`.
 
 GSAP est utilisé sous sa licence standard gratuite (gsap.com/standard-license), qui couvre les sites commerciaux.
