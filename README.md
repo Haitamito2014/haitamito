@@ -44,19 +44,18 @@ Le formulaire de contact n'a pas de serveur : il ouvre la messagerie du visiteur
 
 ## Crédits des médias
 
-Les photos de transport marocain viennent de Wikimedia Commons sous licence Creative Commons : **l'attribution (auteur + licence) est obligatoire** et figure dans le pied de page du site. Ne pas la retirer.
+Les photos de trains viennent de Wikimedia Commons sous licence Creative Commons BY-SA : **l'attribution (auteur + licence) est obligatoire** et figure dans le pied de page du site. Ne pas la retirer. Les logos des compagnies ont été **retirés par retouche** ; la licence exige d'indiquer cette modification, ce que fait le pied de page.
 
 | Fichier | Sujet | Auteur | Licence | Source |
 |---|---|---|---|---|
-| `assets/img/alboraq-tanger.webp` | Al Boraq au terminus de Tanger (accueil) | إيان | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:ONCF_Al_Boraq_at_Tangier_Terminus.jpg) |
-| `assets/img/alboraq-arrivee.webp` | Al Boraq en gare de Tanger-Ville | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:22.11.24_Tanger-Ville_1208_(54166318289).jpg) |
-| `assets/img/oncf-train.webp` | Train ONCF E-1474 à Tanger-Ville | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:25.11.24_Tanger_Ville_E-1474_(54166482504).jpg) |
-| `assets/img/ctm-autocar.webp` | Autocar CTM Irizar i6 | Anthony Levrot | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:Irizar_i6_n%C2%B05310_-_Compagnie_de_Transports_au_Maroc_(Chamb%C3%A9ry).jpg) |
+| `assets/img/alboraq-tanger.webp` | Train à grande vitesse au terminus de Tanger (accueil), retouché | إيان | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:ONCF_Al_Boraq_at_Tangier_Terminus.jpg) |
+| `assets/img/alboraq-arrivee.webp` | Train à grande vitesse en gare de Tanger-Ville, retouché | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:22.11.24_Tanger-Ville_1208_(54166318289).jpg) |
+| `assets/img/oncf-train.webp` | Locomotive E-1474 à Tanger-Ville, retouchée | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:25.11.24_Tanger_Ville_E-1474_(54166482504).jpg) |
 | `assets/img/gare-kenitra.webp` | Gare TGV de Kénitra (non utilisée pour l'instant) | Bertrand Soubeyrand | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:Gare_TGV_Kenitra.jpg) |
 
 Les autres médias viennent de banques gratuites dont la licence autorise l'usage commercial sans attribution :
 
-- **Pexels** (licence Pexels) — photo `rabat-agdal` (10151135) ; vidéos 3044098 (vue depuis le train), 3129671 (réseau, solutions). Page d'origine : `https://www.pexels.com/photo/<id>/` ou `/video/<id>/`
+- **Pexels** (licence Pexels) — photos `rabat-agdal` (10151135), `autocar` (3608967) ; vidéos 3044098 (vue depuis le train), 3129671 (réseau, solutions). Page d'origine : `https://www.pexels.com/photo/<id>/` ou `/video/<id>/`
 - **Unsplash** (licence Unsplash) — `marrakech` (1597212618440-806262de4f6b), `cloudplane` (1570710891163-6d3b5c47248b). Page d'origine `https://unsplash.com/photos/<identifiant>`.
 
 GSAP est utilisé sous sa licence standard gratuite (gsap.com/standard-license), qui couvre les sites commerciaux.
