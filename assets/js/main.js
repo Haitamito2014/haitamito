@@ -1,126 +1,99 @@
-/* Northfare — interactions, motion & FR/EN translation */
+/* Northfare — interactions & FR/EN translation */
 (function () {
   "use strict";
 
   // English strings. French is the source text already in index.html.
   var EN = {
-    "nav.solutions": "Solutions",
-    "nav.clients": "Who it's for",
-    "nav.method": "How we work",
-    "nav.why": "Why Northfare",
-    "nav.cta": "Request a demo",
-    "nav.contact": "Contact",
-
-    "hero.eyebrow": "Travel Tech · Morocco",
-    "hero.title": "Technology that moves travel forward.",
-    "hero.lead": "Northfare gives travel agencies, transport operators and companies one platform to sell, manage and distribute their travel services.",
-    "hero.cta1": "Request a demo",
-    "hero.cta2": "Explore the platform",
-    "hero.chip1": "Travel agencies",
-    "hero.chip2": "Transport operators",
-    "hero.chip3": "Companies",
-
-    "mq.1": "Booking engine",
-    "mq.2": "Distribution & API",
-    "mq.3": "Back office",
-    "mq.4": "Transport ticketing",
-    "mq.5": "Business travel",
-    "mq.6": "Payments & resellers",
-
-    "tile.more": "Learn more",
-    "clients.eyebrow": "Who it's for",
-    "clients.title": "One platform, three travel businesses.",
-    "clients.a.t": "Travel agencies",
-    "clients.a.d": "Sell flights, hotels, tours and packages online and over the counter, with a back office that centralises bookings, customers and invoicing.",
-    "clients.b.t": "Transport operators",
-    "clients.b.d": "Put your inventory on sale on your website and through your resellers: ticketing, seat management, fares and real-time sales tracking.",
-    "clients.c.t": "Companies",
-    "clients.c.d": "Organise your teams' business travel: self-service booking, travel policy, approval workflows and spend tracking.",
-
-    "sol.eyebrow": "Solutions",
-    "sol.title": "Everything you need to sell and manage travel.",
-    "sol.lead": "Modules that work together or on their own, depending on your business.",
-    "sol.1.t": "Booking engine",
-    "sol.1.d": "A B2C and B2B engine for flights, accommodation, transfers and packages, embeddable in your website under your own brand.",
-    "sol.2.t": "Distribution & connectivity",
-    "sol.2.d": "Connect your suppliers and sales channels through APIs to access more content and distribute yours further.",
-    "sol.3.t": "Back office & management",
-    "sol.3.d": "Customer files, bookings, invoicing, commissions and reporting brought together in one tool.",
-    "sol.4.t": "Transport ticketing",
-    "sol.4.d": "Manage routes, timetables, seats and fares, with sales online, at the counter and through your resellers.",
-    "sol.5.t": "Business travel",
-    "sol.5.d": "A booking tool for employees, with travel rules, approvals and spend dashboards.",
-    "sol.6.t": "Payments & reseller network",
-    "sol.6.d": "Online payments, agent accounts, credit limits and commissions to grow your distribution network.",
-
-    "how.eyebrow": "How we work",
-    "how.title": "From the first conversation to go-live.",
-    "how.1.t": "Assessment",
-    "how.1.d": "We study your business, your suppliers and your sales channels.",
-    "how.2.t": "Setup",
-    "how.2.d": "We configure the modules, your fares, your brand and your connections.",
-    "how.3.t": "Launch",
-    "how.3.d": "Your teams are trained and your platform goes live.",
-    "how.4.t": "Ongoing support",
-    "how.4.d": "Responsive support and continuous improvements to grow your sales.",
-
-    "why.eyebrow": "Why Northfare",
-    "why.title": "Built for the Moroccan market, open to the world.",
-    "why.lead": "A local team that understands travel in Morocco and builds tools that meet international standards.",
-    "why.1.t": "Local",
-    "why.1.d": "Pricing in dirhams, interface in French, Arabic and English, support from Morocco.",
-    "why.2.t": "Modular",
-    "why.2.d": "Start with one module and add others as your business grows.",
-    "why.3.t": "Connected",
-    "why.3.d": "An API-first architecture to link your suppliers, tools and partners.",
-    "why.4.t": "Your brand",
-    "why.4.d": "Your customers see your name, your colours and your domain — not ours.",
-
-    "stmt.text": "Travel begins long before departure. We build the technology that makes it simple to sell, smooth to manage and easy to distribute.",
-    "stmt.cta": "Let's talk about your project",
-
-    "contact.eyebrow": "Contact",
-    "contact.title": "Let's talk about your project.",
-    "contact.lead": "Tell us in a few words what you want to sell or manage. We'll get back to you quickly to set up a demo.",
-    "contact.email": "Email",
-    "contact.phone": "Phone",
-    "contact.address": "Address",
-
-    "form.name": "Full name",
-    "form.company": "Company",
-    "form.email": "Work email",
-    "form.phone": "Phone",
-    "form.type": "You are",
-    "form.opt1": "Travel agency",
-    "form.opt2": "Transport operator",
-    "form.opt3": "Company",
-    "form.opt4": "Other",
-    "form.msg": "Your needs",
-    "form.submit": "Send request",
-    "form.ok": "Thank you! Your email app will open to send your request.",
-    "form.err": "Please correct the highlighted fields.",
-    "form.errName": "Please enter your name.",
-    "form.errEmail": "Please enter a valid email address.",
     "skip": "Skip to content",
+    "announce": "New · The group booking platform for rail operators",
+    "nav.groups": "Groups",
+    "nav.corporate": "Corporate",
+    "nav.payment": "Payments",
+    "nav.einvoice": "E-invoicing",
+    "nav.clients": "Who it’s for",
+    "nav.contact": "Contact",
+    "nav.cta": "Request a demo",
 
-    "footer.tag": "Technology that moves travel forward.",
-    "footer.rights": "All rights reserved."
+    "hero.eyebrow": "The group & corporate travel platform",
+    "hero.title": "Moving travel forward.",
+    "hero.lead": "Northfare automates group and business travel sales for transport operators, travel agencies and companies: quote, option, payment, tickets and invoice, end to end.",
+    "hero.cta1": "Request a demo",
+    "hero.cta2": "See the platform",
+    "hero.domains": "Expertise",
+    "d.rail": "Rail", "d.bus": "Coach", "d.air": "Air", "d.agencies": "Agencies", "d.corporate": "Companies",
+
+    "g.title": "Group travel, automated from request to ticket.",
+    "g.problemLabel": "Today",
+    "g.problem": "Most rail operators still handle groups in the back office, by email. Getting a single quote takes days, then come approval and payment.",
+    "g.solutionLabel": "With Northfare",
+    "g.solution": "The whole journey is online and automated, for rail as well as air. On the operator side, a back office to approve, adjust and track every group.",
+    "g.s1k": "Size", "g.s1v": "10 to 100+ travellers",
+    "g.s2k": "Trips", "g.s2v": "One-way, return, multi-destination",
+    "g.s3k": "Fare", "g.s3v": "Per person or total",
+    "st.1": "Request", "st.1d": "online, 24/7",
+    "st.2": "Quote", "st.2d": "automatic",
+    "st.3": "Option", "st.3d": "seats held",
+    "st.4": "Payment", "st.4d": "card or transfer",
+    "st.5": "Tickets", "st.5d": "+ invoice",
+
+    "c.title": "Companies book, receive their invoices and pay online, on their own.",
+    "c.ref": "Platform launched for a major European transport operator",
+    "c.text": "More and more companies want a single place to organise their teams’ travel: self-service booking, travel policy, approvals and spend tracking.",
+    "c.s1k": "Modes", "c.s1v": "Coach & rail",
+    "c.s2k": "Languages",
+    "c.s3k": "Invoices", "c.s3v": "Per entity, online",
+
+    "p.title": "Reconciliation and invoicing on behalf of the operator.",
+    "p.text": "The operator stays in control of its sales. We simplify the admin: payment by card, bank transfer, on invoice or in instalments.",
+    "e.title": "Ready for mandatory e-invoicing.",
+    "e.text": "E-invoicing becomes mandatory in several European countries from 2026. We have already delivered a national rail operator’s portal, in the Factur-X format.",
+
+    "a.title": "Connected to your sales systems.",
+    "a.text": "The platform integrates through APIs with operators’ and partners’ systems, and runs white-label: your customers see your name, not ours.",
+
+    "k.1": "years of group travel expertise",
+    "k.2": "customer support",
+    "k.3": "languages on the corporate platform",
+    "k.4": "automated steps, from request to ticket",
+
+    "cl.title": "One platform, three travel businesses.",
+    "cl.a": "Transport operators",
+    "cl.ad": "Rail, coach, air: sell your seats to groups and companies, with no manual handling.",
+    "cl.b": "Travel agencies",
+    "cl.bd": "An online and over-the-counter tool, with bookings, customers and invoicing in one place.",
+    "cl.c": "Companies",
+    "cl.cd": "Self-service travel for your teams, with travel policy and approvals.",
+
+    "ct.eyebrow": "Contact",
+    "ct.title": "Let’s talk about your project.",
+    "ct.lead": "Tell us what you want to sell or manage. We’ll get back to you to set up a demo.",
+    "f.name": "Full name", "f.company": "Company", "f.email": "Work email", "f.type": "You are",
+    "f.o1": "Transport operator", "f.o2": "Travel agency", "f.o3": "Company", "f.o4": "Other",
+    "f.msg": "Your needs", "f.submit": "Send request",
+    "f.ok": "Thank you! Your email app will open to send your request.",
+    "f.err": "Please correct the highlighted fields.",
+    "f.errName": "Please enter your name.",
+    "f.errEmail": "Please enter a valid email address.",
+
+    "footer.tag": "Travel Tech · Morocco"
   };
   var FR_EXTRA = {
-    "form.ok": "Merci ! Votre messagerie va s'ouvrir pour envoyer votre demande.",
-    "form.err": "Merci de corriger les champs signalés.",
-    "form.errName": "Merci d'indiquer votre nom.",
-    "form.errEmail": "Merci d'indiquer une adresse e-mail valide."
+    "f.ok": "Merci ! Votre messagerie va s’ouvrir pour envoyer votre demande.",
+    "f.err": "Merci de corriger les champs signalés.",
+    "f.errName": "Merci d’indiquer votre nom.",
+    "f.errEmail": "Merci d’indiquer une adresse e-mail valide."
   };
   var META = {
-    fr: { title: "Northfare — Technologie du voyage au Maroc" },
-    en: { title: "Northfare — Travel technology in Morocco" }
+    fr: "Northfare — Plateforme groupes & corporate pour le voyage",
+    en: "Northfare — Group & corporate travel platform"
   };
-  var CONTACT_EMAIL = "contact@northfare.ma"; // fictive: replace with the real address
+  var TYPED = {
+    fr: ["demande → devis → option → paiement → billets", "groupe · 40 voyageurs · Casablanca → Tanger"],
+    en: ["request → quote → option → payment → tickets", "group · 40 travellers · Casablanca → Tangier"]
+  };
+  var CONTACT_EMAIL = "contact@northfaretech.com";
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var hasGsap = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined" && !reduceMotion;
-  if (hasGsap) gsap.registerPlugin(ScrollTrigger);
 
   /* ---------- i18n ---------- */
   var nodes = document.querySelectorAll("[data-i18n]");
@@ -129,10 +102,9 @@
   Object.keys(FR_EXTRA).forEach(function (k) { FR[k] = FR_EXTRA[k]; });
   var DICT = { fr: FR, en: EN };
   var current = "fr";
+  function t(k) { return (DICT[current] && DICT[current][k]) || FR[k] || ""; }
 
-  function t(key) { return (DICT[current] && DICT[current][key]) || FR[key] || ""; }
-
-  function setLang(lang, animate) {
+  function setLang(lang) {
     if (!DICT[lang]) lang = "fr";
     current = lang;
     nodes.forEach(function (el) {
@@ -140,48 +112,48 @@
       if (v) el.textContent = v;
     });
     document.documentElement.lang = lang;
-    document.title = META[lang].title;
+    document.title = META[lang];
     document.querySelectorAll(".lang button").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang));
     });
     var note = document.getElementById("formNote");
     if (note) { note.textContent = ""; note.className = "form__note"; }
     try { localStorage.setItem("nf-lang", lang); } catch (e) { /* storage unavailable */ }
-    splitTitle(animate);
+    restartTyping();
   }
-
-  /* ---------- Hero title word reveal ---------- */
-  var title = document.querySelector("[data-split]");
-  function splitTitle(animate) {
-    if (!title) return;
-    var text = title.textContent.trim();
-    title.setAttribute("aria-label", text);
-    title.innerHTML = text.split(" ").map(function (w) {
-      return '<span class="w" aria-hidden="true"><span>' + w + "</span></span>";
-    }).join(" ");
-    if (hasGsap && animate !== false) {
-      gsap.fromTo(title.querySelectorAll(".w > span"),
-        { yPercent: 110, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: 1.1, ease: "power4.out", stagger: 0.07, delay: 0.15 });
-    }
-  }
-
   document.querySelectorAll(".lang button").forEach(function (b) {
-    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang"), true); });
+    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
   });
+
+  /* ---------- Terminal typing ---------- */
+  var typedEl = document.getElementById("typed");
+  var typeTimer = null;
+  function restartTyping() {
+    if (!typedEl) return;
+    clearTimeout(typeTimer);
+    var lines = TYPED[current] || TYPED.fr;
+    if (reduceMotion) { typedEl.textContent = lines[0]; return; }
+    var li = 0, ci = 0, deleting = false;
+    (function tick() {
+      var line = lines[li];
+      if (!deleting) {
+        ci++;
+        typedEl.textContent = line.slice(0, ci);
+        if (ci === line.length) { deleting = true; typeTimer = setTimeout(tick, 2600); return; }
+        typeTimer = setTimeout(tick, 38);
+      } else {
+        ci--;
+        typedEl.textContent = line.slice(0, ci);
+        if (ci === 0) { deleting = false; li = (li + 1) % lines.length; typeTimer = setTimeout(tick, 400); return; }
+        typeTimer = setTimeout(tick, 16);
+      }
+    })();
+  }
 
   var saved = null;
   try { saved = localStorage.getItem("nf-lang"); } catch (e) { /* ignore */ }
   if (!saved && /^en\b/i.test(navigator.language || "")) saved = "en";
-  if (saved && saved !== "fr") setLang(saved, true); else splitTitle(true);
-
-  /* ---------- Hero intro ---------- */
-  if (hasGsap) {
-    gsap.from([".hero .eyebrow", ".hero__lead", ".hero__ctas", ".hero__foot"], {
-      y: 24, opacity: 0, duration: 1, ease: "power3.out", stagger: 0.12, delay: 0.5
-    });
-    gsap.from(".nav__inner", { y: -16, opacity: 0, duration: .9, ease: "power3.out", delay: 0.2 });
-  }
+  if (saved && saved !== "fr") setLang(saved); else restartTyping();
 
   /* ---------- Mobile menu ---------- */
   var burger = document.getElementById("burger");
@@ -191,88 +163,68 @@
     burger.setAttribute("aria-expanded", String(open));
   });
   links.querySelectorAll("a").forEach(function (a) {
-    a.addEventListener("click", function () {
-      links.classList.remove("is-open");
-      burger.setAttribute("aria-expanded", "false");
-    });
+    a.addEventListener("click", function () { links.classList.remove("is-open"); burger.setAttribute("aria-expanded", "false"); });
   });
 
-  /* ---------- Nav state + progress ---------- */
+  /* ---------- Nav state ---------- */
   var nav = document.querySelector(".nav");
-  var progress = document.getElementById("progress");
-  function onScroll() {
-    nav.classList.toggle("is-scrolled", window.scrollY > 24);
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.transform = "scaleX(" + (max > 0 ? window.scrollY / max : 0) + ")";
-  }
+  function onScroll() { nav.classList.toggle("is-scrolled", window.scrollY > 40); }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  /* ---------- Active section in the navigation ---------- */
-  var navAnchors = Array.prototype.slice.call(links.querySelectorAll('a[href^="#"]'));
-  var sections = navAnchors.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); }).filter(Boolean);
-  if ("IntersectionObserver" in window && sections.length) {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".nav__tabs .tab[href^='#']"));
+  var sections = tabs.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); }).filter(Boolean);
+
+  /* ---------- Observers ---------- */
+  if ("IntersectionObserver" in window) {
+    var rio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("is-visible"); rio.unobserve(en.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll("[data-reveal]").forEach(function (el) { rio.observe(el); });
+
     var sio = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
-        navAnchors.forEach(function (a) {
-          var on = a.getAttribute("href") === "#" + en.target.id;
-          if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+        tabs.forEach(function (a) {
+          if (a.getAttribute("href") === "#" + en.target.id) a.setAttribute("aria-current", "true");
+          else a.removeAttribute("aria-current");
         });
       });
-    }, { rootMargin: "-40% 0px -55% 0px" });
+    }, { rootMargin: "-45% 0px -50% 0px" });
     sections.forEach(function (s) { sio.observe(s); });
-  }
 
-  /* ---------- Scroll reveals ---------- */
-  if (hasGsap) {
-    document.querySelectorAll("[data-reveal]").forEach(function (el) {
-      gsap.from(el, {
-        y: 40, opacity: 0, duration: 1, ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 85%", once: true }
-      });
-    });
-    document.querySelectorAll("[data-stagger]").forEach(function (group) {
-      gsap.from(group.children, {
-        y: 40, opacity: 0, duration: .9, ease: "power3.out", stagger: 0.1,
-        scrollTrigger: { trigger: group, start: "top 82%", once: true }
-      });
-    });
-    // Parallax on the statement background and hero video
-    document.querySelectorAll("[data-parallax]").forEach(function (el) {
-      gsap.to(el, { yPercent: 18, ease: "none",
-        scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true } });
-    });
-    gsap.to(".hero__media", { yPercent: 14, ease: "none",
-      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
-  }
+    var steps = document.getElementById("steps");
+    if (steps && !reduceMotion) {
+      var stepIo = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        stepIo.disconnect();
+        var items = steps.querySelectorAll("li"), i = 0;
+        (function next() {
+          items.forEach(function (li, k) { li.classList.toggle("is-active", k === i); if (k < i) li.classList.add("is-done"); });
+          if (i < items.length) { i++; setTimeout(next, 700); }
+          else { items.forEach(function (li) { li.classList.remove("is-active"); li.classList.add("is-done"); }); }
+        })();
+      }, { threshold: 0.5 });
+      stepIo.observe(steps);
+    } else if (steps) {
+      steps.querySelectorAll("li").forEach(function (li) { li.classList.add("is-done"); });
+    }
 
-  /* ---------- Lazy videos: load & play only when visible ---------- */
-  var lazyVideos = document.querySelectorAll("[data-lazy-video]");
-  if ("IntersectionObserver" in window) {
     var vio = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         var v = en.target;
         if (en.isIntersecting) {
-          if (!v.dataset.loaded) {
-            v.querySelectorAll("source[data-src]").forEach(function (s) { s.src = s.dataset.src; });
-            v.load(); v.dataset.loaded = "1";
-          }
-          var p = v.play(); if (p && p.catch) p.catch(function () {});
-        } else if (v.dataset.loaded) {
-          v.pause();
-        }
+          if (!v.dataset.loaded) { v.querySelectorAll("source[data-src]").forEach(function (s) { s.src = s.dataset.src; }); v.load(); v.dataset.loaded = "1"; }
+          if (!reduceMotion) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+        } else if (v.dataset.loaded) { v.pause(); }
       });
     }, { rootMargin: "200px 0px" });
-    lazyVideos.forEach(function (v) { vio.observe(v); });
+    document.querySelectorAll("[data-lazy-video]").forEach(function (v) { vio.observe(v); });
   } else {
-    lazyVideos.forEach(function (v) {
-      v.querySelectorAll("source[data-src]").forEach(function (s) { s.src = s.dataset.src; });
-      v.load();
-    });
+    document.documentElement.classList.add("no-io");
   }
 
-  /* ---------- Contact form: opens a pre-filled email (no backend yet) ---------- */
+  /* ---------- Contact form: pre-filled email (no backend yet) ---------- */
   var form = document.getElementById("contactForm");
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -282,14 +234,13 @@
     var email = String(d.get("email") || "").trim();
     var nameOk = !!name, emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     function mark(field, ok, key) {
-      var input = form.elements[field], err = document.getElementById("err-" + field);
-      input.setAttribute("aria-invalid", String(!ok));
-      err.textContent = ok ? "" : t(key);
+      form.elements[field].setAttribute("aria-invalid", String(!ok));
+      document.getElementById("err-" + field).textContent = ok ? "" : t(key);
     }
-    mark("name", nameOk, "form.errName");
-    mark("email", emailOk, "form.errEmail");
+    mark("name", nameOk, "f.errName");
+    mark("email", emailOk, "f.errEmail");
     if (!nameOk || !emailOk) {
-      note.textContent = t("form.err"); note.className = "form__note err";
+      note.textContent = t("f.err"); note.className = "form__note err";
       form.elements[nameOk ? "email" : "name"].focus();
       return;
     }
@@ -299,12 +250,11 @@
       (en ? "Name" : "Nom") + ": " + name,
       (en ? "Company" : "Société") + ": " + (d.get("company") || "-"),
       "Email: " + email,
-      (en ? "Phone" : "Téléphone") + ": " + (d.get("phone") || "-"),
       (en ? "Profile" : "Profil") + ": " + d.get("type"),
       "",
       String(d.get("message") || "")
     ].join("\n");
-    note.textContent = t("form.ok"); note.className = "form__note ok";
+    note.textContent = t("f.ok"); note.className = "form__note ok";
     window.location.href = "mailto:" + CONTACT_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
   });
 
