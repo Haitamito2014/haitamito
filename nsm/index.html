@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NSM Messenger</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: two-pane messenger — contact list on the left, tabbed conversations on the right; one pane at a time on phones */
+:root {
+  --bg: #e9eef3;
+  --panel: #ffffff;
+  --panel-2: #f4f7fa;
+  --line: #d6dee6;
+  --fg: #16212c;
+  --muted: #5d6d7c;
+  --accent: #1f6f8b;      /* deep lagoon */
+  --accent-fg: #ffffff;
+  --accent-soft: #dcecf2;
+  --spark: #f2a541;       /* amber for nudges and unread */
+  --mine: #1f6f8b;
+  --mine-fg: #ffffff;
+  --theirs: #eef2f6;
+  --online: #2e9e5b;
+  --busy: #d64545;
+  --away: #e0a526;
+  --offline: #9aa7b3;
+  --shadow: 0 1px 2px rgba(22,33,44,.06), 0 8px 24px rgba(22,33,44,.08);
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e151c; --panel: #151f29; --panel-2: #1b2733; --line: #283745;
+    --fg: #e6edf3; --muted: #93a3b2; --accent: #4fb3d3; --accent-fg: #06202a;
+    --accent-soft: #1b3a47; --spark: #f2b45c; --mine: #2b7f9c; --mine-fg: #f2fbff;
+    --theirs: #1f2c39; --offline: #5e6d7b;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e151c; --panel: #151f29; --panel-2: #1b2733; --line: #283745;
+  --fg: #e6edf3; --muted: #93a3b2; --accent: #4fb3d3; --accent-fg: #06202a;
+  --accent-soft: #1b3a47; --spark: #f2b45c; --mine: #2b7f9c; --mine-fg: #f2fbff;
+  --theirs: #1f2c39; --offline: #5e6d7b;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* ---------- Logo ---------- */
+.logo { display: inline-flex; align-items: center; gap: 10px; }
+.logo svg { width: 34px; height: 34px; flex: none; }
+.logo b { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: .02em; }
+.logo small { display: block; font-size: 11px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+
+/* ---------- Sign-in ---------- */
+.signin { height: 100%; display: grid; place-items: center; }
+.signin-card {
+  width: min(400px, 100%); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 28px; display: grid; gap: 18px;
+}
+.signin-card h1 { font-family: var(--font-display); font-weight: 500; font-size: 26px; margin: 0; text-wrap: balance; }
+.signin-card p { margin: 0; color: var(--muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select {
+  border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 10px 12px; width: 100%;
+}
+.btn {
+  border: 0; border-radius: 8px; padding: 11px 16px; font-weight: 600;
+  background: var(--accent); color: var(--accent-fg);
+}
+.btn:hover { filter: brightness(1.08); }
+.demo-note { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+
+/* ---------- App shell ---------- */
+.app {
+  height: 100%; max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 14px;
+}
+.pane { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Left: me + contacts */
+.me { padding: 16px; border-bottom: 1px solid var(--line); display: grid; gap: 12px; background: var(--panel-2); }
+.me-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.icon-btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; width: 34px; height: 34px; display: grid; place-items: center; }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.me-row { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.me-info { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.me-name { display: flex; gap: 6px; align-items: center; min-width: 0; }
+.me-name input { font-weight: 600; font-size: 16px; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 2px 4px; margin-left: -4px; min-width: 0; flex: 1; }
+.me-name select { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; font-size: 12.5px; padding: 2px 4px; }
+.me-pm { font-size: 13px; color: var(--muted); border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 2px 4px; margin-left: -4px; width: 100%; font-style: italic; }
+.me-name input:hover, .me-pm:hover, .me-name input:focus, .me-pm:focus { border-color: var(--line); background: var(--panel); }
+
+.avatar { position: relative; flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; }
+.avatar.sm { width: 36px; height: 36px; border-radius: 10px; font-size: 14px; }
+.avatar.lg { width: 52px; height: 52px; border-radius: 14px; font-size: 20px; }
+.avatar::after {
+  content: ""; position: absolute; right: -3px; bottom: -3px; width: 13px; height: 13px; border-radius: 50%;
+  border: 2.5px solid var(--panel); background: var(--dot, var(--offline));
+}
+.st-online { --dot: var(--online); }
+.st-busy { --dot: var(--busy); }
+.st-away { --dot: var(--away); }
+.st-offline { --dot: var(--offline); }
+
+.search { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.search input { width: 100%; border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 8px 12px; }
+
+.contacts { overflow-y: auto; flex: 1; padding: 6px 8px 12px; }
+.group-title {
+  width: 100%; display: flex; align-items: center; gap: 6px; border: 0; background: none; text-align: left;
+  padding: 10px 8px 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.group-title .chev { transition: transform .15s; display: inline-block; }
+.group-title[aria-expanded="false"] .chev { transform: rotate(-90deg); }
+.contact {
+  width: 100%; display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 10px;
+  border: 0; background: none; text-align: left; min-width: 0;
+}
+.contact:hover { background: var(--panel-2); }
+.contact.active { background: var(--accent-soft); }
+.contact .c-info { min-width: 0; flex: 1; display: grid; }
+.contact .c-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.contact .c-pm { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.contact.is-offline .c-name { color: var(--muted); font-weight: 500; }
+.badge { flex: none; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 6px; background: var(--spark); color: #2b1a00; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+
+/* Right: conversations */
+.tabs { display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--line); overflow-x: auto; background: var(--panel-2); min-height: 45px; }
+.tab {
+  display: flex; align-items: center; gap: 8px; border: 1px solid transparent; border-bottom: 0; border-radius: 9px 9px 0 0;
+  padding: 7px 8px 7px 12px; background: none; white-space: nowrap; color: var(--muted); font-weight: 500; flex: none;
+}
+.tab.active { background: var(--panel); border-color: var(--line); color: var(--fg); margin-bottom: -1px; }
+.tab .x { border: 0; background: none; width: 20px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: var(--muted); padding: 0; }
+.tab .x:hover { background: var(--line); color: var(--fg); }
+.tab-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dot, var(--offline)); flex: none; }
+.tab.flash { animation: flash 1s ease-in-out 3; }
+@keyframes flash { 50% { background: var(--spark); color: #2b1a00; } }
+
+.convo { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.convo-head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.convo-head .h-info { min-width: 0; flex: 1; }
+.convo-head .h-name { font-family: var(--font-display); font-weight: 700; font-size: 19px; line-height: 1.2; }
+.convo-head .h-sub { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.back { display: none; }
+
+.messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+.msg { max-width: min(72%, 560px); display: grid; gap: 2px; }
+.msg .who { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.msg .bubble { padding: 8px 12px; border-radius: 14px; background: var(--theirs); overflow-wrap: anywhere; white-space: pre-wrap; }
+.msg.mine { align-self: flex-end; }
+.msg.mine .who { text-align: right; }
+.msg.mine .bubble { background: var(--mine); color: var(--mine-fg); }
+.msg .time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.msg.mine .time { text-align: right; }
+.sys { align-self: center; font-size: 12.5px; color: var(--muted); background: var(--panel-2); border: 1px dashed var(--line); border-radius: 20px; padding: 4px 12px; margin: 8px 0; text-align: center; }
+.sys.nudge { border-color: var(--spark); color: var(--fg); }
+.typing { font-size: 13px; color: var(--muted); padding: 0 16px 6px; min-height: 24px; font-style: italic; }
+.typing .dots span { display: inline-block; animation: bounce 1.2s infinite; }
+.typing .dots span:nth-child(2) { animation-delay: .15s; }
+.typing .dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(-3px); } }
+
+.composer { border-top: 1px solid var(--line); padding: 10px 12px 12px; display: grid; gap: 8px; position: relative; }
+.tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.tool { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 500; display: inline-flex; gap: 6px; align-items: center; }
+.tool:hover { border-color: var(--accent); color: var(--accent); }
+.tool svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tool.nudge-btn:hover { border-color: var(--spark); color: var(--fg); background: color-mix(in srgb, var(--spark) 20%, var(--panel)); }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+.input-row textarea { flex: 1; min-width: 0; resize: none; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 10px 12px; height: 46px; max-height: 140px; }
+.input-row .btn { height: 46px; }
+
+.picker {
+  position: absolute; bottom: calc(100% - 4px); left: 12px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: grid; grid-template-columns: repeat(8, 36px); gap: 2px; z-index: 5;
+}
+.picker button { border: 0; background: none; border-radius: 8px; height: 36px; font-size: 20px; }
+.picker button:hover { background: var(--panel-2); }
+.picker .hint { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); padding: 4px 4px 0; }
+
+.empty { flex: 1; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); }
+.empty h2 { font-family: var(--font-display); font-weight: 500; color: var(--fg); margin: 12px 0 4px; font-size: 22px; }
+.empty p { margin: 0; max-width: 36ch; }
+
+.shake { animation: shake .5s cubic-bezier(.36,.07,.19,.97) 2; }
+@keyframes shake {
+  10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(4px, -2px); }
+  30%, 50%, 70% { transform: translate(-7px, 2px); } 40%, 60% { transform: translate(7px, -1px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shake, .tab.flash, .typing .dots span { animation: none; }
+}
+
+/* Toasts */
+.toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(16px + env(safe-area-inset-top, 0px)); display: grid; gap: 8px; z-index: 20; }
+.toast {
+  width: min(300px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  border-radius: 10px; box-shadow: var(--shadow); padding: 10px 12px; display: flex; gap: 10px; align-items: center;
+  animation: slidein .25s ease-out; text-align: left;
+}
+.toast b { display: block; }
+.toast span { font-size: 13px; color: var(--muted); }
+@keyframes slidein { from { transform: translateY(12px); opacity: 0; } }
+
+/* Phone: one pane at a time */
+@media (max-width: 760px) {
+  body { padding-block: 8px; }
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .app.chatting .pane-left { display: none; }
+  .app:not(.chatting) .pane-right { display: none; }
+  .back { display: grid; }
+  .msg { max-width: 85%; }
+  .picker { grid-template-columns: repeat(6, 36px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ Sign-in ============ -->
+<section class="signin" id="signin">
+  <form class="signin-card" id="signinForm" novalidate>
+    <div class="logo">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
+        <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
+        <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
+        <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
+      </svg>
+      <div><b>NSM</b><small>Messenger</small></div>
+    </div>
+    <div>
+      <h1>Sign in and start chatting</h1>
+      <p>Pick a display name and how you want to appear to your contacts.</p>
+    </div>
+    <div class="field">
+      <label for="nameInput">Display name</label>
+      <input id="nameInput" maxlength="32" placeholder="e.g. Haitam" autocomplete="nickname" required>
+    </div>
+    <div class="field">
+      <label for="statusInput">Sign in as</label>
+      <select id="statusInput">
+        <option value="online">Online</option>
+        <option value="busy">Busy</option>
+        <option value="away">Away</option>
+        <option value="offline">Appear offline</option>
+      </select>
+    </div>
+    <button class="btn" type="submit">Sign in</button>
+    <p class="demo-note">Demo version: your contacts are simulated and reply automatically. Conversations are saved only in this browser.</p>
+  </form>
+</section>
+
+<!-- ============ Main app ============ -->
+<main class="app" id="app" hidden>
+  <aside class="pane pane-left">
+    <div class="me">
+      <div class="me-top">
+        <div class="logo">
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
+            <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
+            <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
+            <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
+          </svg>
+          <div><b>NSM</b></div>
+        </div>
+        <div style="display:flex; gap:6px">
+          <button class="icon-btn" id="soundBtn" title="Sounds on" aria-label="Turn sounds off">
+            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          </button>
+          <button class="icon-btn" id="signoutBtn" title="Sign out" aria-label="Sign out">
+            <svg viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="me-row">
+        <div class="avatar lg" id="meAvatar"></div>
+        <div class="me-info">
+          <div class="me-name">
+            <input id="meName" aria-label="Your display name" maxlength="32">
+            <select id="meStatus" aria-label="Your status">
+              <option value="online">Online</option>
+              <option value="busy">Busy</option>
+              <option value="away">Away</option>
+              <option value="offline">Appear offline</option>
+            </select>
+          </div>
+          <input class="me-pm" id="mePm" aria-label="Your personal message" maxlength="80" placeholder="Share a quick message">
+        </div>
+      </div>
+    </div>
+    <div class="search"><input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts"></div>
+    <div class="contacts" id="contacts"></div>
+  </aside>
+
+  <section class="pane pane-right" id="chatPane">
+    <div class="tabs" id="tabs" role="tablist" aria-label="Open conversations"></div>
+    <div class="empty" id="empty">
+      <div>
+        <svg viewBox="0 0 40 40" width="64" height="64" aria-hidden="true">
+          <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
+          <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
+          <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
+          <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
+        </svg>
+        <h2>No conversation open</h2>
+        <p>Double-click a contact (or tap on a phone) to start a conversation. You can keep several open in tabs.</p>
+      </div>
+    </div>
+    <div class="convo" id="convo" hidden>
+      <div class="convo-head">
+        <button class="icon-btn back" id="backBtn" aria-label="Back to contacts">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="avatar" id="hAvatar"></div>
+        <div class="h-info">
+          <div class="h-name" id="hName"></div>
+          <div class="h-sub" id="hSub"></div>
+        </div>
+      </div>
+      <div class="messages" id="messages" aria-live="polite"></div>
+      <div class="typing" id="typing"></div>
+      <div class="composer">
+        <div class="picker" id="picker" hidden></div>
+        <div class="tools">
+          <button class="tool" id="emojiBtn" type="button" aria-expanded="false">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4 4 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Emoticons
+          </button>
+          <button class="tool nudge-btn" id="nudgeBtn" type="button" title="Shake your contact's window">
+            <svg viewBox="0 0 24 24"><path d="M4 8l2 8M10 6l2 12M16 8l2 8"/></svg>Nudge
+          </button>
+          <button class="tool" id="clearBtn" type="button">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Clear history
+          </button>
+        </div>
+        <form class="input-row" id="sendForm">
+          <textarea id="input" rows="1" placeholder="Type a message" aria-label="Message"></textarea>
+          <button class="btn" type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ---------------- Storage (safe) ---------------- */
+  const KEY = "nsm-messenger-v1";
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+  const save = () => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        me, sound, convos,
+        contacts: contacts.map(c => ({ id: c.id, status: c.status }))
+      }));
+    } catch {}
+  };
+
+  /* ---------------- Data ---------------- */
+  const STATUS_LABEL = { online: "Online", busy: "Busy", away: "Away", offline: "Offline" };
+  const COLORS = ["#1f6f8b", "#b4532a", "#6b4fa3", "#2e8a62", "#a33d63", "#3d5fa8", "#8a6a1f", "#3b7c84"];
+
+  // Simulated contacts. All fictional.
+  const SEED = [
+    { id: "yasmine", name: "Yasmine", pm: "Back from Chefchaouen ☀️", status: "online", mood: "warm",
+      lines: ["Haha yes!", "I was just thinking about that", "Did you see the photos I sent?", "Let's grab a coffee this week?", "Totally agree 😊"] },
+    { id: "karim", name: "Karim B.", pm: "Coding… do not disturb", status: "busy", mood: "short",
+      lines: ["one sec", "in a meeting, call you after", "ok 👍", "send me the link", "yep"] },
+    { id: "lea", name: "Léa", pm: "♪ listening to lo-fi beats", status: "online", mood: "warm",
+      lines: ["Oh nice!!", "Tell me more 👀", "I miss our long chats", "Same here lol", "That song is stuck in my head now 🎶"] },
+    { id: "omar", name: "Omar", pm: "Match tonight at 9 ⚽", status: "away", mood: "sport",
+      lines: ["Are you watching the match?", "We're going to win this one", "Haha classic", "Brb, getting food", "Who's coming tonight?"] },
+    { id: "sofia", name: "Sofia", pm: "Exams week 📚", status: "online", mood: "study",
+      lines: ["Can't talk long, revising", "Do you have the notes from Tuesday?", "Wish me luck!", "Ugh, so much to learn", "Thanks, you're the best"] },
+    { id: "nadia", name: "Nadia", pm: "", status: "offline", mood: "warm",
+      lines: ["Sorry, just saw this!", "Hey you! How are things?", "Haha I knew it", "Let's catch up soon"] },
+    { id: "thomas", name: "Thomas", pm: "Somewhere over the Atlantic ✈️", status: "offline", mood: "short",
+      lines: ["Just landed!", "wifi is terrible here", "Talk later?", "👋"] },
+    { id: "ines", name: "Inès", pm: "New phone, who dis", status: "offline", mood: "warm",
+      lines: ["Hiii", "OMG really?", "Send pics!", "That's hilarious 😂"] }
+  ];
+
+  const saved = load();
+  let me = saved.me || null;
+  let sound = saved.sound !== false;
+  let convos = saved.convos || {};     // id -> [{from, text, t, kind}]
+  const contacts = SEED.map((c, i) => {
+    const s = (saved.contacts || []).find(x => x.id === c.id);
+    return { ...c, color: COLORS[i % COLORS.length], status: s ? s.status : c.status, unread: 0 };
+  });
+  let openTabs = [];
+  let active = null;
+  const collapsed = { online: false, offline: false };
+  const typingTimers = {};
+
+  /* ---------------- Helpers ---------------- */
+  const $ = id => document.getElementById(id);
+  const esc = s => s.replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  const initials = n => n.trim().split(/\s+/).map(p => p[0]).join("").slice(0, 2).toUpperCase() || "?";
+  const byId = id => contacts.find(c => c.id === id);
+  const fmtTime = t => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  const EMOTICONS = [
+    [":)", "🙂"], [":-)", "🙂"], [":D", "😄"], [":-D", "😄"], [";)", "😉"], [";-)", "😉"],
+    [":(", "🙁"], [":-(", "🙁"], [":P", "😛"], [":p", "😛"], [":O", "😮"], [":o", "😮"],
+    [":'(", "😢"], ["(H)", "😎"], ["(h)", "😎"], [":@", "😠"], ["<3", "❤️"], ["(y)", "👍"],
+    ["(Y)", "👍"], ["(n)", "👎"], ["(N)", "👎"], ["(L)", "❤️"], ["(l)", "❤️"], ["(*)", "⭐"], ["(coffee)", "☕"]
+  ];
+  const PICKER = ["🙂","😄","😉","😛","😮","😢","😎","😠","❤️","👍","👎","⭐","☕","😂","🥰","🤔","🙌","🎉","😴","🔥","🍕","🎶","⚽","👋"];
+  const emoticonize = text => {
+    // Replace text shortcuts only when surrounded by start/end or whitespace.
+    let out = text;
+    for (const [code, emo] of EMOTICONS) {
+      const re = new RegExp("(^|\\s)" + code.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?=\\s|$)", "g");
+      out = out.replace(re, "$1" + emo);
+    }
+    return out;
+  };
+
+  /* ---------------- Sound (Web Audio, starts after a click) ---------------- */
+  let ctx = null;
+  const tone = (freqs, dur = 0.12) => {
+    if (!sound) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      let t = ctx.currentTime;
+      for (const f of freqs) {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
+        t += dur * 0.8;
+      }
+    } catch {}
+  };
+  const sfx = {
+    message: () => tone([880, 1175]),
+    signin: () => tone([523, 659, 784], 0.14),
+    nudge: () => tone([180, 140, 180, 140], 0.08)
+  };
+
+  /* ---------------- Rendering: me ---------------- */
+  function renderMe() {
+    $("meName").value = me.name;
+    $("meStatus").value = me.status;
+    $("mePm").value = me.pm || "";
+    const a = $("meAvatar");
+    a.textContent = initials(me.name);
+    a.style.background = "#1f6f8b";
+    a.className = "avatar lg st-" + me.status;
+    const sb = $("soundBtn");
+    sb.title = sound ? "Sounds on" : "Sounds off";
+    sb.setAttribute("aria-label", sound ? "Turn sounds off" : "Turn sounds on");
+    sb.style.opacity = sound ? 1 : 0.45;
+  }
+
+  /* ---------------- Rendering: contacts ---------------- */
+  function contactRow(c) {
+    const off = c.status === "offline";
+    return `<button class="contact ${off ? "is-offline" : ""} ${c.id === active ? "active" : ""}" data-id="${c.id}" title="${esc(c.name)} (${STATUS_LABEL[c.status]})">
+      <span class="avatar sm st-${c.status}" style="background:${c.color}">${esc(initials(c.name))}</span>
+      <span class="c-info">
+        <span class="c-name">${esc(c.name)}${c.status !== "online" && !off ? ` <span style="font-weight:400;color:var(--muted)">(${STATUS_LABEL[c.status]})</span>` : ""}</span>
+        ${c.pm ? `<span class="c-pm">${esc(c.pm)}</span>` : ""}
+      </span>
+      ${c.unread ? `<span class="badge" aria-label="${c.unread} unread">${c.unread}</span>` : ""}
+    </button>`;
+  }
+  function renderContacts() {
+    const q = $("search").value.trim().toLowerCase();
+    const list = contacts.filter(c => !q || c.name.toLowerCase().includes(q) || (c.pm || "").toLowerCase().includes(q));
+    const on = list.filter(c => c.status !== "offline");
+    const off = list.filter(c => c.status === "offline");
+    const group = (key, label, items) => `
+      <button class="group-title" data-group="${key}" aria-expanded="${!collapsed[key]}"><span class="chev">▾</span>${label} (${items.length})</button>
+      ${collapsed[key] ? "" : items.map(contactRow).join("")}`;
+    $("contacts").innerHTML = group("online", "Online", on) + group("offline", "Offline", off) +
+      (list.length ? "" : `<p style="color:var(--muted);padding:12px 8px;margin:0">No contact matches “${esc(q)}”.</p>`);
+  }
+
+  /* ---------------- Rendering: tabs & conversation ---------------- */
+  function renderTabs() {
+    $("tabs").innerHTML = openTabs.map(id => {
+      const c = byId(id);
+      return `<div class="tab ${id === active ? "active" : ""}" role="tab" aria-selected="${id === active}" data-tab="${id}" tabindex="0">
+        <span class="tab-dot st-${c.status}" aria-label="${STATUS_LABEL[c.status]}"></span>
+        ${esc(c.name)}${c.unread ? ` <span class="badge">${c.unread}</span>` : ""}
+        <button class="x" data-close="${id}" aria-label="Close conversation with ${esc(c.name)}">✕</button>
+      </div>`;
+    }).join("");
+    $("empty").hidden = !!active;
+    $("convo").hidden = !active;
+  }
+
+  function renderHeader() {
+    if (!active) return;
+    const c = byId(active);
+    const a = $("hAvatar");
+    a.textContent = initials(c.name); a.style.background = c.color; a.className = "avatar st-" + c.status;
+    $("hName").textContent = c.name;
+    $("hSub").textContent = STATUS_LABEL[c.status] + (c.pm ? " · " + c.pm : "");
+  }
+
+  function renderMessages() {
+    if (!active) return;
+    const c = byId(active);
+    const msgs = convos[active] || [];
+    let html = msgs.length ? "" : `<div class="sys">This is the start of your conversation with ${esc(c.name)}. Say hi :)</div>`;
+    if (c.status === "offline") html += `<div class="sys">${esc(c.name)} appears to be offline. Messages will be delivered when they sign in.</div>`;
+    let prev = null;
+    for (const m of msgs) {
+      if (m.kind === "nudge") {
+        html += `<div class="sys nudge">${m.from === "me" ? "You sent a nudge." : esc(c.name) + " just sent you a nudge!"} · ${fmtTime(m.t)}</div>`;
+        prev = null; continue;
+      }
+      const mine = m.from === "me";
+      const showWho = prev !== m.from;
+      html += `<div class="msg ${mine ? "mine" : ""}">
+        ${showWho ? `<div class="who">${mine ? esc(me.name) : esc(c.name)} says:</div>` : ""}
+        <div class="bubble">${esc(m.text)}</div>
+        <div class="time">${fmtTime(m.t)}</div>
+      </div>`;
+      prev = m.from;
+    }
+    const box = $("messages");
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function renderTyping() {
+    const el = $("typing");
+    if (active && typingTimers[active]) {
+      el.innerHTML = `${esc(byId(active).name)} is typing<span class="dots"><span>.</span><span>.</span><span>.</span></span>`;
+    } else el.textContent = "";
+  }
+
+  function renderAll() { renderMe(); renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping(); }
+
+  /* ---------------- Actions ---------------- */
+  function openChat(id) {
+    if (!openTabs.includes(id)) openTabs.push(id);
+    active = id;
+    byId(id).unread = 0;
+    $("app").classList.add("chatting");
+    renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping();
+    $("picker").hidden = true;
+    setTimeout(() => $("input").focus(), 0);
+  }
+  function closeChat(id) {
+    openTabs = openTabs.filter(x => x !== id);
+    if (active === id) active = openTabs[openTabs.length - 1] || null;
+    if (!active) $("app").classList.remove("chatting");
+    renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping();
+  }
+  function push(id, msg) {
+    (convos[id] = convos[id] || []).push(msg);
+    if (convos[id].length > 300) convos[id] = convos[id].slice(-300);
+    save();
+  }
+
+  function incoming(id, msg) {
+    push(id, msg);
+    const c = byId(id);
+    if (!openTabs.includes(id)) openTabs.push(id);
+    if (id !== active || document.hidden) {
+      c.unread++;
+      toast(c, msg.kind === "nudge" ? "sent you a nudge!" : msg.text);
+    }
+    if (msg.kind === "nudge") { sfx.nudge(); shake(); } else sfx.message();
+    if (!active) active = id;
+    renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping();
+    if (id !== active) { const t = document.querySelector(`[data-tab="${id}"]`); t && t.classList.add("flash"); }
+  }
+
+  function shake() {
+    const p = $("chatPane");
+    p.classList.remove("shake"); void p.offsetWidth; p.classList.add("shake");
+  }
+
+  // Simulated reply: picks a contextual line, shows "typing", then answers.
+  function scheduleReply(id, userText) {
+    const c = byId(id);
+    if (c.status === "offline" || me.status === "offline") return;
+    if (typingTimers[id]) return;
+    const delayStart = c.status === "away" ? 3000 + Math.random() * 4000 : 600 + Math.random() * 1200;
+    setTimeout(() => {
+      typingTimers[id] = true; renderTyping();
+      const text = replyFor(c, userText);
+      setTimeout(() => {
+        delete typingTimers[id];
+        incoming(id, { from: id, text, t: Date.now() });
+        renderTyping();
+      }, 900 + Math.min(text.length * 45, 2600));
+    }, delayStart);
+  }
+
+  function replyFor(c, text) {
+    const t = text.toLowerCase();
+    if (/\b(hi|hey|hello|salut|salam|bonjour|yo)\b/.test(t)) return rand([`Hey ${me.name}! 😄`, `Heyy, what's up?`, `Hi! Long time no see`]);
+    if (/how are (you|u)|ça va|ca va|labas/.test(t)) return rand(["All good, and you?", "Pretty busy but fine 🙂", "Great now that you're here haha"]);
+    if (/\?$/.test(t.trim())) return rand(["Hmm good question 🤔", "Yes, I think so", "Not sure, let me check", "Why do you ask? 😛"]);
+    if (/(bye|ciao|later|see you|bslama)/.test(t)) return rand(["Bye! 👋", "Talk later!", "See you ❤️"]);
+    if (/(lol|haha|mdr|😂)/.test(t)) return rand(["😂😂", "Haha stop", "I'm dying lol"]);
+    return rand(c.lines);
+  }
+
+  function send(text) {
+    text = emoticonize(text.trim());
+    if (!text || !active) return;
+    push(active, { from: "me", text, t: Date.now() });
+    renderMessages();
+    scheduleReply(active, text);
+  }
+
+  function nudge() {
+    if (!active) return;
+    const last = (convos[active] || []).filter(m => m.kind === "nudge" && m.from === "me").pop();
+    if (last && Date.now() - last.t < 5000) { toast(null, "Wait a few seconds before sending another nudge."); return; }
+    push(active, { from: "me", kind: "nudge", t: Date.now() });
+    sfx.nudge(); shake(); renderMessages();
+    const c = byId(active), id = active;
+    if (c.status !== "offline" && Math.random() < 0.5) {
+      setTimeout(() => incoming(id, { from: id, text: rand(["Hey! Stop shaking my window 😂", "Ok ok I'm here!", "What?? 😄"]), t: Date.now() }), 1800);
+    }
+  }
+
+  /* ---------------- Toasts ---------------- */
+  function toast(c, text) {
+    const el = document.createElement("button");
+    el.className = "toast";
+    el.innerHTML = c
+      ? `<span class="avatar sm st-${c.status}" style="background:${c.color}">${esc(initials(c.name))}</span><div style="min-width:0"><b>${esc(c.name)}</b><span>${esc(text.length > 70 ? text.slice(0, 70) + "…" : text)}</span></div>`
+      : `<div><span>${esc(text)}</span></div>`;
+    if (c) el.addEventListener("click", () => { openChat(c.id); el.remove(); });
+    else el.addEventListener("click", () => el.remove());
+    $("toasts").appendChild(el);
+    setTimeout(() => el.remove(), 5000);
+  }
+
+  /* ---------------- Simulated presence ---------------- */
+  let presenceTimer = null;
+  function startPresence() {
+    clearInterval(presenceTimer);
+    presenceTimer = setInterval(() => {
+      const c = rand(contacts);
+      const before = c.status;
+      const options = ["online", "online", "away", "busy", "offline"].filter(s => s !== before);
+      c.status = rand(options);
+      if (before === "offline" && c.status !== "offline") {
+        sfx.signin();
+        toast(c, "has just signed in.");
+        // Sometimes a contact who signs in says hi first.
+        if (Math.random() < 0.35) setTimeout(() => incoming(c.id, { from: c.id, text: rand([`Hey ${me.name}!`, "Anyone here?", "Hiii 👋"]), t: Date.now() }), 4000);
+      }
+      save(); renderContacts(); renderTabs(); renderHeader();
+      if (active === c.id) renderMessages();
+    }, 25000);
+  }
+
+  /* ---------------- Sign-in / out ---------------- */
+  function enterApp() {
+    $("signin").hidden = true;
+    $("app").hidden = false;
+    renderAll();
+    startPresence();
+    sfx.signin();
+    setTimeout(() => {
+      const y = byId("yasmine");
+      if (!(convos.yasmine || []).length && y.status !== "offline")
+        incoming("yasmine", { from: "yasmine", text: `Hey ${me.name}! You're online 😄`, t: Date.now() });
+    }, 2500);
+  }
+
+  $("nameInput").value = (me && me.name) || "";
+  if (me) $("statusInput").value = me.status;
+  $("signinForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("nameInput").value.trim();
+    if (!name) { $("nameInput").focus(); $("nameInput").placeholder = "Enter a display name to sign in"; return; }
+    me = { name, status: $("statusInput").value, pm: (me && me.pm) || "" };
+    save(); enterApp();
+  });
+  $("signoutBtn").addEventListener("click", () => {
+    clearInterval(presenceTimer);
+    openTabs = []; active = null;
+    $("app").hidden = true; $("app").classList.remove("chatting");
+    $("signin").hidden = false;
+  });
+
+  /* ---------------- Events ---------------- */
+  $("meName").addEventListener("change", e => { me.name = e.target.value.trim() || me.name; save(); renderMe(); renderMessages(); });
+  $("meStatus").addEventListener("change", e => { me.status = e.target.value; save(); renderMe(); });
+  $("mePm").addEventListener("change", e => { me.pm = e.target.value.trim(); save(); });
+  $("soundBtn").addEventListener("click", () => { sound = !sound; save(); renderMe(); });
+  $("search").addEventListener("input", renderContacts);
+
+  $("contacts").addEventListener("click", e => {
+    const g = e.target.closest("[data-group]");
+    if (g) { collapsed[g.dataset.group] = !collapsed[g.dataset.group]; renderContacts(); return; }
+    const b = e.target.closest(".contact");
+    if (b) openChat(b.dataset.id);
+  });
+
+  $("tabs").addEventListener("click", e => {
+    const x = e.target.closest("[data-close]");
+    if (x) { e.stopPropagation(); closeChat(x.dataset.close); return; }
+    const t = e.target.closest("[data-tab]");
+    if (t) openChat(t.dataset.tab);
+  });
+  $("tabs").addEventListener("keydown", e => {
+    const t = e.target.closest("[data-tab]");
+    if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openChat(t.dataset.tab); }
+  });
+  $("backBtn").addEventListener("click", () => { $("app").classList.remove("chatting"); });
+
+  $("sendForm").addEventListener("submit", e => {
+    e.preventDefault();
+    send($("input").value);
+    $("input").value = ""; $("input").style.height = "";
+  });
+  $("input").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("sendForm").requestSubmit(); }
+  });
+  $("input").addEventListener("input", e => {
+    const ta = e.target; ta.style.height = "46px"; ta.style.height = Math.min(ta.scrollHeight + 2, 140) + "px";
+  });
+
+  $("picker").innerHTML = PICKER.map(em => `<button type="button" data-emo="${em}" aria-label="Insert ${em}">${em}</button>`).join("") +
+    `<div class="hint">Shortcuts: :) :D ;) :P :( (y) &lt;3 (coffee)</div>`;
+  $("emojiBtn").addEventListener("click", () => {
+    const p = $("picker"); p.hidden = !p.hidden; $("emojiBtn").setAttribute("aria-expanded", String(!p.hidden));
+  });
+  $("picker").addEventListener("click", e => {
+    const b = e.target.closest("[data-emo]"); if (!b) return;
+    const ta = $("input"), s = ta.selectionStart ?? ta.value.length;
+    ta.value = ta.value.slice(0, s) + b.dataset.emo + ta.value.slice(ta.selectionEnd ?? s);
+    ta.focus(); ta.selectionStart = ta.selectionEnd = s + b.dataset.emo.length;
+  });
+  document.addEventListener("click", e => {
+    if (!e.target.closest("#picker") && !e.target.closest("#emojiBtn")) { $("picker").hidden = true; $("emojiBtn").setAttribute("aria-expanded", "false"); }
+  });
+  $("nudgeBtn").addEventListener("click", nudge);
+  $("clearBtn").addEventListener("click", () => {
+    if (!active) return;
+    const btn = $("clearBtn");
+    if (btn.dataset.confirm) { delete convos[active]; save(); renderMessages(); btn.dataset.confirm = ""; delete btn.dataset.confirm; btn.lastChild.textContent = "Clear history"; return; }
+    btn.dataset.confirm = "1"; btn.lastChild.textContent = "Click again to clear";
+    setTimeout(() => { if (btn.dataset.confirm) { delete btn.dataset.confirm; btn.lastChild.textContent = "Clear history"; } }, 3000);
+  });
+
+  if (me) { $("nameInput").value = me.name; }
+})();
+</script>
+</body>
+</html>
