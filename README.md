@@ -39,13 +39,11 @@ Pour le mettre en ligne : héberger ces fichiers statiques (GitHub Pages, Netlif
 
 ## Crédits des médias
 
-Les photos de trains viennent de Wikimedia Commons sous licence Creative Commons BY-SA. Cette licence **exige** de citer l'auteur, la licence et de signaler les retouches (logos retirés). **À la demande du propriétaire du site, ces crédits ne sont pas affichés sur le site** : c'est un non-respect de la licence, à ses risques. Pour se mettre en règle, ajouter une ligne de crédits en pied de page ou remplacer ces photos par des visuels sans attribution.
+Tous les visuels sont neutres : aucune compagnie, aucun logo, aucun opérateur reconnaissable. Ils viennent de banques d'images dont la licence autorise l'usage commercial **sans attribution obligatoire** :
 
-| Fichier | Sujet | Auteur | Licence | Source |
-|---|---|---|---|---|
-| `assets/img/alboraq-tanger.webp` | Train à grande vitesse au terminus de Tanger (accueil), retouché | إيان | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:ONCF_Al_Boraq_at_Tangier_Terminus.jpg) |
-| `assets/img/alboraq-arrivee.webp` | Train à grande vitesse en gare de Tanger-Ville, retouché | Phil Richards | CC BY-SA 2.0 | [Commons](https://commons.wikimedia.org/wiki/File:22.11.24_Tanger-Ville_1208_(54166318289).jpg) |
-
-Autres médias, sous licences gratuites sans attribution obligatoire :
-
-- **Pexels** — photo `rabat-agdal` (10151135) ; vidéo `tech` (3129671).
+| Fichier | Sujet | Source |
+|---|---|---|
+| `assets/media/train-window.mp4` | Paysage vu depuis la fenêtre d'un train (accueil) | Pexels, vidéo 3044098 |
+| `assets/media/tech.mp4` | Réseau abstrait (section API) | Pexels, vidéo 3129671 |
+| `assets/img/hublot.webp` | Aile d'avion vue d'un hublot (section Corporate) | Unsplash, photo 1488085061387-422e29b40080 |
+| `assets/img/aile-nuages.webp` | Aile d'avion au-dessus des nuages (fond Contact) | Unsplash, photo 1517479149777-5f3b1511d5ad |

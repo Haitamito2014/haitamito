@@ -9,11 +9,11 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="Northfare — Plateforme groupes & corporate">
   <meta property="og:description" content="Devis, option, paiement, billets et facturation électronique, de bout en bout.">
-  <meta property="og:image" content="assets/img/alboraq-tanger.webp">
+  <meta property="og:image" content="assets/media/train-window-poster.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="assets/img/alboraq-tanger.webp">
+  <link rel="preload" as="image" href="assets/media/train-window-poster.webp">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -52,7 +52,9 @@
   <section class="hero">
     <div class="hero__portal" aria-hidden="true">
       <div class="portal">
-        <img src="assets/img/alboraq-tanger.webp" alt="" width="1920" height="1440" fetchpriority="high">
+        <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="assets/media/train-window-poster.webp">
+          <source src="assets/media/train-window.mp4" type="video/mp4">
+        </video>
       </div>
       <div class="portal__glow"></div>
     </div>
@@ -124,7 +126,7 @@
     </div>
     <div class="split split--media">
       <figure class="media" data-reveal>
-        <img src="assets/img/alboraq-arrivee.webp" alt="Train à grande vitesse entrant en gare" loading="lazy" width="1280" height="850">
+        <img src="assets/img/hublot.webp" alt="Aile d’avion vue depuis un hublot au coucher du soleil" loading="lazy" width="1600" height="900">
         <figcaption>REF · <span data-i18n="c.ref">Plateforme lancée pour un grand transporteur européen</span></figcaption>
       </figure>
       <div class="split__text" data-reveal>
@@ -191,7 +193,7 @@
 
   <!-- CONTACT -->
   <section class="contact" id="contact">
-    <div class="contact__bg" aria-hidden="true"><img src="assets/img/rabat-agdal.webp" alt="" loading="lazy" width="1800" height="1197"></div>
+    <div class="contact__bg" aria-hidden="true"><img src="assets/img/aile-nuages.webp" alt="" loading="lazy" width="1800" height="1200"></div>
     <div class="contact__inner">
       <div data-reveal>
         <p class="eyebrow" data-i18n="ct.eyebrow">Contact</p>

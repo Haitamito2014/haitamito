@@ -94,6 +94,8 @@
   var CONTACT_EMAIL = "contact@northfaretech.com";
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var heroVideo = document.getElementById("heroVideo");
+  if (heroVideo && reduceMotion) { heroVideo.removeAttribute("autoplay"); heroVideo.pause(); }
 
   /* ---------- i18n ---------- */
   var nodes = document.querySelectorAll("[data-i18n]");
