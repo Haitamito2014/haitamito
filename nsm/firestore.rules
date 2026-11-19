@@ -1,0 +1,63 @@
+rules_version = '2';
+
+// NSM Messenger: security rules for Cloud Firestore.
+// Paste this whole file into Firebase console > Firestore Database > Rules, then Publish.
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+
+    // Public profile of each person: name, status, personal message, picture.
+    // Any signed-in person can read profiles (needed to add a contact by e-mail).
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 40
+        && request.resource.data.email == request.auth.token.email.lower();
+      allow delete: if false;
+
+      // My contact list: only I can see or change it.
+      match /contacts/{cid} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+
+      // "X added you to their contact list": the sender writes it, the owner reads and deletes it.
+      match /requests/{from} {
+        allow read, delete: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == from;
+      }
+    }
+
+    // Conversations: only their members can see or change them.
+    match /convos/{cid} {
+      function isMember(data) { return signedIn() && request.auth.uid in data.members; }
+
+      allow get: if resource == null || isMember(resource.data);
+      allow list: if isMember(resource.data);
+      allow create: if isMember(request.resource.data) && request.resource.data.members.size() <= 20;
+      allow update: if isMember(resource.data) && isMember(request.resource.data)
+        && request.resource.data.members.size() <= 20;
+      allow delete: if false;
+
+      match /msgs/{mid} {
+        function convo() { return get(/databases/$(db)/documents/convos/$(cid)).data; }
+        function otherOf(c) { return c.members[0] == request.auth.uid ? c.members[1] : c.members[0]; }
+        function blockPath(c) { return /databases/$(db)/documents/users/$(otherOf(c))/contacts/$(request.auth.uid); }
+        // In a one-to-one conversation, you can't write to someone who blocked you.
+        function notBlocked(c) {
+          return c.members.size() != 2
+            || !exists(blockPath(c))
+            || get(blockPath(c)).data.get('blocked', false) == false;
+        }
+
+        allow read: if isMember(convo());
+        allow create: if isMember(convo())
+          && request.resource.data.from == request.auth.uid
+          && notBlocked(convo());
+        allow update, delete: if false;
+      }
+    }
+  }
+}

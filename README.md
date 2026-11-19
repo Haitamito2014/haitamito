@@ -14,6 +14,7 @@ Site vitrine et identité visuelle de **Northfare**, société de technologie du
 | `assets/media/` | Vidéo de la section API et son image d'attente |
 | `assets/logo/` | Logos vectoriels (SVG) et PNG haute résolution |
 | `favicon.svg` | Icône d'onglet |
+| `nsm/` | **NSM Messenger** : messagerie avec comptes utilisateurs (voir `nsm/README.md` pour la mise en service Firebase) |
 
 Typographies : IBM Plex Mono (étiquettes, navigation) et Inter (textes), via Google Fonts.
 
