@@ -7,9 +7,9 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&display=swap">
 <style>
-/* Layout: two-pane messenger — contact list on the left, tabbed conversations on the right; one pane at a time on phones */
+/* Layout: classic messenger — contact list left; tabbed conversation right with display pictures in a side column; one pane at a time on phones */
 :root {
   --bg: #e9eef3;
   --panel: #ffffff;
@@ -17,18 +17,17 @@
   --line: #d6dee6;
   --fg: #16212c;
   --muted: #5d6d7c;
-  --accent: #1f6f8b;      /* deep lagoon */
+  --accent: #1f6f8b;
   --accent-fg: #ffffff;
   --accent-soft: #dcecf2;
-  --spark: #f2a541;       /* amber for nudges and unread */
-  --mine: #1f6f8b;
-  --mine-fg: #ffffff;
-  --theirs: #eef2f6;
+  --spark: #f2a541;
+  --spark-fg: #2b1a00;
   --online: #2e9e5b;
   --busy: #d64545;
   --away: #e0a526;
   --offline: #9aa7b3;
-  --shadow: 0 1px 2px rgba(22,33,44,.06), 0 8px 24px rgba(22,33,44,.08);
+  --overlay: rgba(14, 21, 28, .45);
+  --shadow: 0 1px 2px rgba(22,33,44,.06), 0 8px 24px rgba(22,33,44,.10);
   --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
   color-scheme: light;
@@ -37,18 +36,16 @@
   :root:not([data-theme="light"]) {
     --bg: #0e151c; --panel: #151f29; --panel-2: #1b2733; --line: #283745;
     --fg: #e6edf3; --muted: #93a3b2; --accent: #4fb3d3; --accent-fg: #06202a;
-    --accent-soft: #1b3a47; --spark: #f2b45c; --mine: #2b7f9c; --mine-fg: #f2fbff;
-    --theirs: #1f2c39; --offline: #5e6d7b;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --accent-soft: #1b3a47; --spark: #f2b45c; --offline: #5e6d7b; --overlay: rgba(0,0,0,.6);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.4);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e151c; --panel: #151f29; --panel-2: #1b2733; --line: #283745;
   --fg: #e6edf3; --muted: #93a3b2; --accent: #4fb3d3; --accent-fg: #06202a;
-  --accent-soft: #1b3a47; --spark: #f2b45c; --mine: #2b7f9c; --mine-fg: #f2fbff;
-  --theirs: #1f2c39; --offline: #5e6d7b;
-  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  --accent-soft: #1b3a47; --spark: #f2b45c; --offline: #5e6d7b; --overlay: rgba(0,0,0,.6);
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.4);
   color-scheme: dark;
 }
 
@@ -65,6 +62,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 [hidden] { display: none !important; }
+svg.i { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- Status colours ---------- */
+.st-online { --dot: var(--online); }
+.st-busy, .st-phone { --dot: var(--busy); }
+.st-away, .st-brb, .st-lunch { --dot: var(--away); }
+.st-offline { --dot: var(--offline); }
+
+/* ---------- Display pictures: status shown as a coloured frame ---------- */
+.dp {
+  --s: 40px; position: relative; flex: none; width: var(--s); height: var(--s); border-radius: calc(var(--s) * .26);
+  display: grid; place-items: center; background: linear-gradient(145deg, var(--g1, #1f6f8b), var(--g2, #4fb3d3));
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 4.5px var(--dot, var(--offline)); margin: 4px;
+}
+.dp img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+.dp-emo { font-size: calc(var(--s) * .56); line-height: 1; }
+.dp.xs { --s: 24px; box-shadow: 0 0 0 1.5px var(--panel), 0 0 0 3px var(--dot, var(--offline)); margin: 3px; }
+.dp.sm { --s: 36px; }
+.dp.lg { --s: 60px; }
+.dp.xl { --s: 104px; box-shadow: 0 0 0 3px var(--panel), 0 0 0 7px var(--dot, var(--offline)); margin: 7px; }
+.dp.blocked::after { content: "⛔"; position: absolute; right: -6px; bottom: -6px; font-size: 13px; }
+.dp.offline-look { filter: grayscale(.85); opacity: .7; }
 
 /* ---------- Logo ---------- */
 .logo { display: inline-flex; align-items: center; gap: 10px; }
@@ -72,186 +91,247 @@ button { cursor: pointer; }
 .logo b { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: .02em; }
 .logo small { display: block; font-size: 11px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
 
+/* ---------- Generic controls ---------- */
+.btn { border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 600; background: var(--accent); color: var(--accent-fg); }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.icon-btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; width: 34px; height: 34px; display: grid; place-items: center; flex: none; }
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.field { display: grid; gap: 6px; }
+.field label, .label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select { border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 10px 12px; width: 100%; }
+
 /* ---------- Sign-in ---------- */
 .signin { height: 100%; display: grid; place-items: center; }
-.signin-card {
-  width: min(400px, 100%); background: var(--panel); border: 1px solid var(--line);
-  border-radius: 14px; box-shadow: var(--shadow); padding: 28px; display: grid; gap: 18px;
-}
+.signin-card { width: min(400px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 28px; display: grid; gap: 18px; }
 .signin-card h1 { font-family: var(--font-display); font-weight: 500; font-size: 26px; margin: 0; text-wrap: balance; }
 .signin-card p { margin: 0; color: var(--muted); }
-.field { display: grid; gap: 6px; }
-.field label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.field input, .field select {
-  border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 10px 12px; width: 100%;
-}
-.btn {
-  border: 0; border-radius: 8px; padding: 11px 16px; font-weight: 600;
-  background: var(--accent); color: var(--accent-fg);
-}
-.btn:hover { filter: brightness(1.08); }
 .demo-note { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
 
 /* ---------- App shell ---------- */
-.app {
-  height: 100%; max-width: 1200px; margin: 0 auto;
-  display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 14px;
-}
-.pane { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.app { height: 100%; max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 14px; }
+.pane { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-/* Left: me + contacts */
-.me { padding: 16px; border-bottom: 1px solid var(--line); display: grid; gap: 12px; background: var(--panel-2); }
+/* Left: me */
+.me { padding: 14px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; background: var(--panel-2); }
 .me-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.icon-btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; width: 34px; height: 34px; display: grid; place-items: center; }
-.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
-.me-row { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.me-row { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.me-row > button.dp-btn { border: 0; background: none; padding: 0; border-radius: 16px; }
 .me-info { min-width: 0; flex: 1; display: grid; gap: 2px; }
 .me-name { display: flex; gap: 6px; align-items: center; min-width: 0; }
-.me-name input { font-weight: 600; font-size: 16px; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 2px 4px; margin-left: -4px; min-width: 0; flex: 1; }
-.me-name select { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; font-size: 12.5px; padding: 2px 4px; }
-.me-pm { font-size: 13px; color: var(--muted); border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 2px 4px; margin-left: -4px; width: 100%; font-style: italic; }
-.me-name input:hover, .me-pm:hover, .me-name input:focus, .me-pm:focus { border-color: var(--line); background: var(--panel); }
+.inline-edit { border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 2px 4px; margin-left: -4px; min-width: 0; }
+.inline-edit:hover, .inline-edit:focus { border-color: var(--line); background: var(--panel); }
+#meName { font-weight: 600; font-size: 16px; flex: 1; }
+#meStatus { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; font-size: 12.5px; padding: 2px 4px; max-width: 128px; }
+#mePm { font-size: 13px; color: var(--muted); width: 100%; font-style: italic; }
+.music { display: flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--muted); min-width: 0; }
+.music input[type="text"] { flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 3px 6px; font-size: 12.5px; }
+.music label { display: flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
 
-.avatar { position: relative; flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; }
-.avatar.sm { width: 36px; height: 36px; border-radius: 10px; font-size: 14px; }
-.avatar.lg { width: 52px; height: 52px; border-radius: 14px; font-size: 20px; }
-.avatar::after {
-  content: ""; position: absolute; right: -3px; bottom: -3px; width: 13px; height: 13px; border-radius: 50%;
-  border: 2.5px solid var(--panel); background: var(--dot, var(--offline));
-}
-.st-online { --dot: var(--online); }
-.st-busy { --dot: var(--busy); }
-.st-away { --dot: var(--away); }
-.st-offline { --dot: var(--offline); }
+.list-tools { display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); align-items: center; }
+.list-tools input { flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 7px 10px; }
+.sortbar { display: flex; gap: 4px; padding: 6px 16px 0; font-size: 12.5px; color: var(--muted); align-items: center; }
+.sortbar button { border: 0; background: none; border-radius: 6px; padding: 2px 8px; color: var(--muted); }
+.sortbar button[aria-pressed="true"] { background: var(--accent-soft); color: var(--fg); font-weight: 600; }
 
-.search { padding: 12px 16px; border-bottom: 1px solid var(--line); }
-.search input { width: 100%; border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 8px 12px; }
-
-.contacts { overflow-y: auto; flex: 1; padding: 6px 8px 12px; }
-.group-title {
-  width: 100%; display: flex; align-items: center; gap: 6px; border: 0; background: none; text-align: left;
-  padding: 10px 8px 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
-}
+.contacts { overflow-y: auto; flex: 1; padding: 4px 8px 12px; }
+.group-title { width: 100%; display: flex; align-items: center; gap: 6px; border: 0; background: none; text-align: left; padding: 10px 8px 4px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .group-title .chev { transition: transform .15s; display: inline-block; }
 .group-title[aria-expanded="false"] .chev { transform: rotate(-90deg); }
-.contact {
-  width: 100%; display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 10px;
-  border: 0; background: none; text-align: left; min-width: 0;
-}
-.contact:hover { background: var(--panel-2); }
+.contact { display: flex; gap: 8px; align-items: center; padding: 4px 6px; border-radius: 10px; min-width: 0; cursor: pointer; }
+.contact:hover, .contact:focus-visible { background: var(--panel-2); }
 .contact.active { background: var(--accent-soft); }
 .contact .c-info { min-width: 0; flex: 1; display: grid; }
 .contact .c-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.contact .c-name small { font-weight: 400; color: var(--muted); font-size: 12.5px; }
 .contact .c-pm { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .contact.is-offline .c-name { color: var(--muted); font-weight: 500; }
-.badge { flex: none; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 6px; background: var(--spark); color: #2b1a00; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.c-menu { border: 0; background: none; width: 28px; height: 28px; border-radius: 6px; color: var(--muted); display: grid; place-items: center; flex: none; opacity: .55; }
+.contact:hover .c-menu, .c-menu:focus-visible { opacity: 1; }
+.c-menu:hover { background: var(--line); color: var(--fg); }
+.badge { flex: none; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 6px; background: var(--spark); color: var(--spark-fg); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 
-/* Right: conversations */
-.tabs { display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--line); overflow-x: auto; background: var(--panel-2); min-height: 45px; }
-.tab {
-  display: flex; align-items: center; gap: 8px; border: 1px solid transparent; border-bottom: 0; border-radius: 9px 9px 0 0;
-  padding: 7px 8px 7px 12px; background: none; white-space: nowrap; color: var(--muted); font-weight: 500; flex: none;
-}
+/* Right: tabs */
+.tabs { display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--line); overflow-x: auto; background: var(--panel-2); min-height: 45px; flex: none; }
+.tab { display: flex; align-items: center; gap: 8px; border: 1px solid transparent; border-bottom: 0; border-radius: 9px 9px 0 0; padding: 7px 8px 7px 12px; background: none; white-space: nowrap; color: var(--muted); font-weight: 500; flex: none; cursor: pointer; max-width: 220px; }
+.tab .t-name { overflow: hidden; text-overflow: ellipsis; }
 .tab.active { background: var(--panel); border-color: var(--line); color: var(--fg); margin-bottom: -1px; }
-.tab .x { border: 0; background: none; width: 20px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: var(--muted); padding: 0; }
+.tab .x { border: 0; background: none; width: 20px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: var(--muted); padding: 0; flex: none; }
 .tab .x:hover { background: var(--line); color: var(--fg); }
 .tab-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dot, var(--offline)); flex: none; }
 .tab.flash { animation: flash 1s ease-in-out 3; }
-@keyframes flash { 50% { background: var(--spark); color: #2b1a00; } }
+@keyframes flash { 50% { background: var(--spark); color: var(--spark-fg); } }
 
+/* Conversation */
 .convo { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.convo-head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
-.convo-head .h-info { min-width: 0; flex: 1; }
-.convo-head .h-name { font-family: var(--font-display); font-weight: 700; font-size: 19px; line-height: 1.2; }
-.convo-head .h-sub { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.convo-head { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.convo-head .h-info { min-width: 0; flex: 1 1 0; }
+.h-name { font-family: var(--font-display); font-weight: 700; font-size: 19px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h-sub { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h-actions { display: flex; gap: 6px; }
 .back { display: none; }
 
-.messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 4px; min-height: 0; }
-.msg { max-width: min(72%, 560px); display: grid; gap: 2px; }
-.msg .who { font-size: 12px; color: var(--muted); margin-top: 8px; }
-.msg .bubble { padding: 8px 12px; border-radius: 14px; background: var(--theirs); overflow-wrap: anywhere; white-space: pre-wrap; }
-.msg.mine { align-self: flex-end; }
-.msg.mine .who { text-align: right; }
-.msg.mine .bubble { background: var(--mine); color: var(--mine-fg); }
-.msg .time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.msg.mine .time { text-align: right; }
-.sys { align-self: center; font-size: 12.5px; color: var(--muted); background: var(--panel-2); border: 1px dashed var(--line); border-radius: 20px; padding: 4px 12px; margin: 8px 0; text-align: center; }
-.sys.nudge { border-color: var(--spark); color: var(--fg); }
-.typing { font-size: 13px; color: var(--muted); padding: 0 16px 6px; min-height: 24px; font-style: italic; }
-.typing .dots span { display: inline-block; animation: bounce 1.2s infinite; }
-.typing .dots span:nth-child(2) { animation-delay: .15s; }
-.typing .dots span:nth-child(3) { animation-delay: .3s; }
+.convo-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 150px; }
+.msg-col { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.messages { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; min-height: 0; background-color: var(--panel); }
+.side { border-left: 1px solid var(--line); padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; background: var(--panel-2); text-align: center; }
+.side .who-pic { display: grid; justify-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.side button { border: 0; background: none; padding: 0; color: inherit; }
+
+.m { display: grid; gap: 1px; max-width: 100%; }
+.m .who { font-size: 12.5px; color: var(--muted); margin-top: 10px; display: flex; gap: 8px; align-items: baseline; }
+.m .who time { font-size: 11px; font-variant-numeric: tabular-nums; }
+.m .txt { padding-left: 12px; overflow-wrap: anywhere; white-space: pre-wrap; font-size: 15.5px; }
+.m.mine .who { color: var(--accent); }
+.sys { align-self: flex-start; font-size: 13px; color: var(--muted); padding: 6px 10px; margin: 8px 0 2px; border-left: 3px solid var(--line); background: var(--panel-2); border-radius: 0 8px 8px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sys.wizz { border-left-color: var(--spark); color: var(--fg); font-weight: 600; }
+.sys.wink { border-left-color: var(--accent); color: var(--fg); }
+.sys .linkish { border: 0; background: none; color: var(--accent); text-decoration: underline; padding: 0; font-size: 13px; }
+.card { margin: 4px 0 2px 12px; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 10px; display: grid; gap: 8px; width: min(320px, 100%); }
+.card .f-row { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.card .f-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .f-meta { font-size: 12.5px; color: var(--muted); }
+.card img { width: 100%; border-radius: 6px; display: block; background: #fff; }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); width: 100%; animation: fill 1.4s linear; }
+@keyframes fill { from { width: 0; } }
+
+.statusline { font-size: 12.5px; color: var(--muted); padding: 4px 16px 6px; min-height: 26px; border-top: 1px solid var(--line); background: var(--panel); }
+.statusline.typing { font-style: italic; }
+.dots span { display: inline-block; animation: bounce 1.2s infinite; }
+.dots span:nth-child(2) { animation-delay: .15s; }
+.dots span:nth-child(3) { animation-delay: .3s; }
 @keyframes bounce { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(-3px); } }
 
-.composer { border-top: 1px solid var(--line); padding: 10px 12px 12px; display: grid; gap: 8px; position: relative; }
-.tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.tool { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 500; display: inline-flex; gap: 6px; align-items: center; }
-.tool:hover { border-color: var(--accent); color: var(--accent); }
-.tool svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.tool.nudge-btn:hover { border-color: var(--spark); color: var(--fg); background: color-mix(in srgb, var(--spark) 20%, var(--panel)); }
+/* Composer */
+.composer { border-top: 1px solid var(--line); padding: 8px 12px 12px; display: grid; gap: 8px; position: relative; }
+.tools { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.tool { border: 1px solid transparent; background: none; border-radius: 8px; padding: 5px 8px; font-size: 13px; font-weight: 500; display: inline-flex; gap: 5px; align-items: center; color: var(--fg); }
+.tool:hover, .tool[aria-expanded="true"] { border-color: var(--line); background: var(--panel-2); color: var(--accent); }
+.tool.wizz-btn { border-color: var(--spark); background: color-mix(in srgb, var(--spark) 18%, var(--panel)); font-weight: 700; color: var(--fg); }
+.tool.wizz-btn:hover { background: color-mix(in srgb, var(--spark) 35%, var(--panel)); }
 .input-row { display: flex; gap: 8px; align-items: flex-end; }
-.input-row textarea { flex: 1; min-width: 0; resize: none; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 10px 12px; height: 46px; max-height: 140px; }
-.input-row .btn { height: 46px; }
+.input-row textarea { flex: 1; min-width: 0; resize: none; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 10px 12px; height: 48px; max-height: 140px; font-size: 15.5px; }
+.input-row .btn { height: 48px; }
 
-.picker {
-  position: absolute; bottom: calc(100% - 4px); left: 12px; background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: grid; grid-template-columns: repeat(8, 36px); gap: 2px; z-index: 5;
-}
-.picker button { border: 0; background: none; border-radius: 8px; height: 36px; font-size: 20px; }
-.picker button:hover { background: var(--panel-2); }
-.picker .hint { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); padding: 4px 4px 0; }
+.pop { position: absolute; bottom: calc(100% - 4px); left: 12px; right: 12px; max-width: 420px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 10px; z-index: 6; display: grid; gap: 8px; }
+.pop .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 2px; }
+.pop .grid button { border: 0; background: none; border-radius: 8px; height: 38px; font-size: 21px; }
+.pop .grid button:hover { background: var(--panel-2); }
+.pop .hint { font-size: 12px; color: var(--muted); }
+.wink-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; }
+.wink-grid button { border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 8px 4px; display: grid; justify-items: center; gap: 2px; font-size: 12.5px; }
+.wink-grid button span { font-size: 28px; line-height: 1.1; }
+.wink-grid button:hover { border-color: var(--accent); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--panel-2); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.swatch { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--line); padding: 0; }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2.5px var(--accent); }
+.scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
+.scene-grid button { height: 58px; border-radius: 8px; border: 1px solid var(--line); background-color: var(--panel); font-size: 12.5px; display: flex; align-items: flex-end; padding: 4px 6px; font-weight: 600; }
+.scene-grid button[aria-pressed="true"] { border: 2px solid var(--accent); }
 
 .empty { flex: 1; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); }
 .empty h2 { font-family: var(--font-display); font-weight: 500; color: var(--fg); margin: 12px 0 4px; font-size: 22px; }
-.empty p { margin: 0; max-width: 36ch; }
+.empty p { margin: 0 auto; max-width: 38ch; }
 
+/* Wizz shake */
 .shake { animation: shake .5s cubic-bezier(.36,.07,.19,.97) 2; }
 @keyframes shake {
-  10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(4px, -2px); }
-  30%, 50%, 70% { transform: translate(-7px, 2px); } 40%, 60% { transform: translate(7px, -1px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .shake, .tab.flash, .typing .dots span { animation: none; }
+  10%, 90% { transform: translate(-3px, 1px); } 20%, 80% { transform: translate(6px, -3px); }
+  30%, 50%, 70% { transform: translate(-10px, 3px); } 40%, 60% { transform: translate(10px, -2px); }
 }
 
-/* Toasts */
-.toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(16px + env(safe-area-inset-top, 0px)); display: grid; gap: 8px; z-index: 20; }
-.toast {
-  width: min(300px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
-  border-radius: 10px; box-shadow: var(--shadow); padding: 10px 12px; display: flex; gap: 10px; align-items: center;
-  animation: slidein .25s ease-out; text-align: left;
-}
+/* Winks: full-pane animations */
+.wink-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 8; }
+.wp { position: absolute; line-height: 1; will-change: transform, top; }
+.wp.rise { top: 105%; animation: rise var(--d) ease-in var(--delay) forwards, sway 1.2s ease-in-out var(--delay) infinite alternate; }
+.wp.fall { top: -12%; animation: fall var(--d) linear var(--delay) forwards, sway 1.4s ease-in-out var(--delay) infinite alternate; }
+.wp.burst { left: 50%; top: 45%; animation: burst 1.6s cubic-bezier(.1,.7,.3,1) var(--delay) forwards; opacity: 0; }
+.wp.zoom { left: 50%; top: 50%; font-size: min(180px, 40vw); animation: zoom 2.6s ease-out forwards; }
+.wp.fly { left: -10%; top: 90%; font-size: 72px; animation: fly 2.4s ease-in forwards; }
+@keyframes rise { to { top: -15%; } }
+@keyframes fall { to { top: 110%; } }
+@keyframes sway { from { transform: translateX(-14px) rotate(-8deg); } to { transform: translateX(14px) rotate(8deg); } }
+@keyframes burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(.3); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2); } }
+@keyframes zoom { 0% { transform: translate(-50%, -50%) scale(0) rotate(-30deg); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.25) rotate(8deg); opacity: 1; } 40%, 75% { transform: translate(-50%, -50%) scale(1) rotate(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; } }
+@keyframes fly { to { left: 105%; top: -15%; transform: rotate(10deg); } }
+
+/* Toasts (top right) */
+.toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(16px + env(safe-area-inset-top, 0px)); display: grid; gap: 8px; z-index: 30; }
+.toast { width: min(300px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; box-shadow: var(--shadow); padding: 8px 12px; display: flex; gap: 8px; align-items: center; animation: slidein .25s ease-out; text-align: left; }
+.toast.wizz { border-left-color: var(--spark); }
 .toast b { display: block; }
-.toast span { font-size: 13px; color: var(--muted); }
-@keyframes slidein { from { transform: translateY(12px); opacity: 0; } }
+.toast span.t { font-size: 13px; color: var(--muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@keyframes slidein { from { transform: translateY(-12px); opacity: 0; } }
 
-/* Phone: one pane at a time */
+/* Context menu */
+.menu { position: fixed; z-index: 40; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 6px; min-width: 210px; display: grid; }
+.menu button { border: 0; background: none; text-align: left; padding: 7px 10px; border-radius: 6px; display: flex; gap: 8px; align-items: center; }
+.menu button:hover { background: var(--panel-2); }
+.menu .sep { height: 1px; background: var(--line); margin: 4px 2px; }
+.menu .danger { color: var(--busy); }
+.menu .label { padding: 4px 10px 2px; }
+
+/* Modal */
+.modal-back { position: fixed; inset: 0; background: var(--overlay); display: grid; place-items: center; z-index: 50; padding: 16px; }
+.modal { width: min(460px, 100%); max-height: calc(100% - 16px); overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 20px; display: grid; gap: 14px; }
+.modal h2 { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 21px; }
+.modal .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.dp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 10px; justify-items: center; }
+.dp-grid button { border: 0; background: none; padding: 0; border-radius: 16px; }
+.dp-grid button[aria-pressed="true"] .dp { --dot: var(--accent); }
+.ink-wrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #ffffff; touch-action: none; }
+.ink-wrap canvas { display: block; width: 100%; height: 240px; cursor: crosshair; }
+.ttt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: min(270px, 100%); margin: 0 auto; }
+.ttt button { aspect-ratio: 1; max-width: 100%; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; font-family: var(--font-display); font-size: 40px; font-weight: 700; }
+.ttt button.x { color: var(--accent); }
+.ttt button.o { color: var(--spark); }
+.ttt-status { text-align: center; font-weight: 600; min-height: 1.4em; }
+.pick-list { display: grid; gap: 4px; max-height: 300px; overflow: auto; }
+.pick-list button { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 6px 10px; text-align: left; }
+.pick-list button:hover { border-color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .shake, .tab.flash, .dots span, .wp.rise, .wp.fall, .wp.fly, .wp.burst { animation: none !important; }
+  .wp.rise, .wp.fall, .wp.fly, .wp.burst { display: none; }
+}
+
+@media (max-width: 1000px) {
+  .convo-body { grid-template-columns: minmax(0, 1fr); }
+  .side { display: none; }
+}
 @media (max-width: 760px) {
   body { padding-block: 8px; }
+  .h-actions .icon-btn { width: 32px; height: 32px; }
+  .convo-head { padding: 8px 10px; gap: 6px; }
   .app { grid-template-columns: minmax(0, 1fr); }
   .app.chatting .pane-left { display: none; }
   .app:not(.chatting) .pane-right { display: none; }
   .back { display: grid; }
-  .msg { max-width: 85%; }
-  .picker { grid-template-columns: repeat(6, 36px); }
+  .tool .tl { display: none; }
+  .tool { padding: 7px; }
+  .tool.wizz-btn .tl { display: inline; }
 }
 </style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="nsm-logo" viewBox="0 0 40 40">
+    <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
+    <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
+    <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
+    <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
+  </symbol>
+</svg>
+
 <!-- ============ Sign-in ============ -->
 <section class="signin" id="signin">
   <form class="signin-card" id="signinForm" novalidate>
-    <div class="logo">
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
-        <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
-        <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
-        <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
-      </svg>
-      <div><b>NSM</b><small>Messenger</small></div>
-    </div>
+    <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b><small>Messenger</small></div></div>
     <div>
       <h1>Sign in and start chatting</h1>
       <p>Pick a display name and how you want to appear to your contacts.</p>
@@ -262,12 +342,7 @@ button { cursor: pointer; }
     </div>
     <div class="field">
       <label for="statusInput">Sign in as</label>
-      <select id="statusInput">
-        <option value="online">Online</option>
-        <option value="busy">Busy</option>
-        <option value="away">Away</option>
-        <option value="offline">Appear offline</option>
-      </select>
+      <select id="statusInput"></select>
     </div>
     <button class="btn" type="submit">Sign in</button>
     <p class="demo-note">Demo version: your contacts are simulated and reply automatically. Conversations are saved only in this browser.</p>
@@ -279,41 +354,40 @@ button { cursor: pointer; }
   <aside class="pane pane-left">
     <div class="me">
       <div class="me-top">
-        <div class="logo">
-          <svg viewBox="0 0 40 40" aria-hidden="true">
-            <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
-            <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
-            <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
-            <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
-          </svg>
-          <div><b>NSM</b></div>
-        </div>
+        <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b></div></div>
         <div style="display:flex; gap:6px">
-          <button class="icon-btn" id="soundBtn" title="Sounds on" aria-label="Turn sounds off">
-            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <button class="icon-btn" id="soundBtn" aria-label="Turn sounds off" title="Sounds on">
+            <svg class="i" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
           </button>
-          <button class="icon-btn" id="signoutBtn" title="Sign out" aria-label="Sign out">
-            <svg viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg>
+          <button class="icon-btn" id="signoutBtn" aria-label="Sign out" title="Sign out">
+            <svg class="i" viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg>
           </button>
         </div>
       </div>
       <div class="me-row">
-        <div class="avatar lg" id="meAvatar"></div>
+        <button class="dp-btn" id="meDpBtn" title="Change display picture" aria-label="Change display picture"></button>
         <div class="me-info">
           <div class="me-name">
-            <input id="meName" aria-label="Your display name" maxlength="32">
-            <select id="meStatus" aria-label="Your status">
-              <option value="online">Online</option>
-              <option value="busy">Busy</option>
-              <option value="away">Away</option>
-              <option value="offline">Appear offline</option>
-            </select>
+            <input class="inline-edit" id="meName" aria-label="Your display name" maxlength="32">
+            <select id="meStatus" aria-label="Your status"></select>
           </div>
-          <input class="me-pm" id="mePm" aria-label="Your personal message" maxlength="80" placeholder="Share a quick message">
+          <input class="inline-edit" id="mePm" aria-label="Your personal message" maxlength="80" placeholder="Type a personal message">
         </div>
       </div>
+      <div class="music">
+        <label><input type="checkbox" id="musicOn"> ♫ Show what I'm listening to</label>
+        <input type="text" id="musicSong" aria-label="Song you're listening to" placeholder="Artist – Song" maxlength="60">
+      </div>
     </div>
-    <div class="search"><input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts"></div>
+    <div class="list-tools">
+      <input id="search" type="search" placeholder="Search contacts" aria-label="Search contacts">
+      <button class="icon-btn" id="addBtn" title="Add a contact" aria-label="Add a contact">
+        <svg class="i" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 20a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>
+      </button>
+    </div>
+    <div class="sortbar" role="group" aria-label="Sort contacts">
+      Sort by <button data-sort="groups">Groups</button><button data-sort="status">Online / offline</button>
+    </div>
     <div class="contacts" id="contacts"></div>
   </aside>
 
@@ -321,415 +395,958 @@ button { cursor: pointer; }
     <div class="tabs" id="tabs" role="tablist" aria-label="Open conversations"></div>
     <div class="empty" id="empty">
       <div>
-        <svg viewBox="0 0 40 40" width="64" height="64" aria-hidden="true">
-          <rect x="2" y="6" width="26" height="20" rx="8" fill="#1f6f8b"/>
-          <path d="M8 26 L6 33 L14 26 Z" fill="#1f6f8b"/>
-          <rect x="14" y="14" width="24" height="18" rx="8" fill="#f2a541"/>
-          <path d="M32 32 L35 38 L26 32 Z" fill="#f2a541"/>
-        </svg>
+        <svg width="64" height="64" aria-hidden="true"><use href="#nsm-logo"/></svg>
         <h2>No conversation open</h2>
-        <p>Double-click a contact (or tap on a phone) to start a conversation. You can keep several open in tabs.</p>
+        <p>Click a contact to start a conversation. Use the ⋯ button next to a contact to send a Wizz, play a game, block or move them.</p>
       </div>
     </div>
     <div class="convo" id="convo" hidden>
       <div class="convo-head">
-        <button class="icon-btn back" id="backBtn" aria-label="Back to contacts">
-          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <div class="avatar" id="hAvatar"></div>
-        <div class="h-info">
-          <div class="h-name" id="hName"></div>
-          <div class="h-sub" id="hSub"></div>
+        <button class="icon-btn back" id="backBtn" aria-label="Back to contacts"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <span id="hDp"></span>
+        <div class="h-info"><div class="h-name" id="hName"></div><div class="h-sub" id="hSub"></div></div>
+        <div class="h-actions">
+          <button class="icon-btn" id="inviteBtn" title="Invite someone to this conversation" aria-label="Invite someone to this conversation">
+            <svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 19a6.5 6.5 0 0 1 13 0"/><path d="M19 7v6M16 10h6"/></svg>
+          </button>
+          <button class="icon-btn" id="gameBtn" title="Play tic-tac-toe" aria-label="Play tic-tac-toe">
+            <svg class="i" viewBox="0 0 24 24"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+          </button>
+          <button class="icon-btn" id="sceneBtn" title="Change background" aria-label="Change background">
+            <svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg>
+          </button>
         </div>
       </div>
-      <div class="messages" id="messages" aria-live="polite"></div>
-      <div class="typing" id="typing"></div>
-      <div class="composer">
-        <div class="picker" id="picker" hidden></div>
-        <div class="tools">
-          <button class="tool" id="emojiBtn" type="button" aria-expanded="false">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4 4 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Emoticons
-          </button>
-          <button class="tool nudge-btn" id="nudgeBtn" type="button" title="Shake your contact's window">
-            <svg viewBox="0 0 24 24"><path d="M4 8l2 8M10 6l2 12M16 8l2 8"/></svg>Nudge
-          </button>
-          <button class="tool" id="clearBtn" type="button">
-            <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Clear history
-          </button>
+      <div class="convo-body">
+        <div class="msg-col">
+          <div class="messages" id="messages" aria-live="polite"></div>
+          <div class="statusline" id="statusline"></div>
+          <div class="composer">
+            <div class="pop" id="pop" hidden></div>
+            <div class="tools" role="toolbar" aria-label="Message tools">
+              <button class="tool" data-pop="font" aria-expanded="false" title="Change font and colour"><svg class="i" viewBox="0 0 24 24"><path d="M4 20 10 4h1l6 16M6.5 14h8"/><path d="M18 20h3"/></svg><span class="tl">Font</span></button>
+              <button class="tool" data-pop="emo" aria-expanded="false" title="Emoticons"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4 4 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg><span class="tl">Emoticons</span></button>
+              <button class="tool" data-pop="wink" aria-expanded="false" title="Send a wink (animation)"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l2.4 5.6L20 9.3l-4.3 3.9 1.2 5.8L12 16l-4.9 3 1.2-5.8L4 9.3l5.6-.7z"/></svg><span class="tl">Winks</span></button>
+              <button class="tool wizz-btn" id="wizzBtn" title="Send a Wizz: shakes your contact's window"><svg class="i" viewBox="0 0 24 24"><path d="M4 8l2 8M10 5l2 14M16 8l2 8"/></svg><span class="tl">Wizz!</span></button>
+              <button class="tool" id="fileBtn" title="Send a photo or file"><svg class="i" viewBox="0 0 24 24"><path d="M20 11.5l-8 8a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L9.7 17.2a1.7 1.7 0 0 1-2.4-2.4L15 7"/></svg><span class="tl">Send file</span></button>
+              <button class="tool" id="inkBtn" title="Draw a handwritten message"><svg class="i" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg><span class="tl">Handwriting</span></button>
+              <input type="file" id="fileInput" hidden>
+            </div>
+            <form class="input-row" id="sendForm">
+              <textarea id="input" rows="1" placeholder="Type a message" aria-label="Message"></textarea>
+              <button class="btn" type="submit">Send</button>
+            </form>
+          </div>
         </div>
-        <form class="input-row" id="sendForm">
-          <textarea id="input" rows="1" placeholder="Type a message" aria-label="Message"></textarea>
-          <button class="btn" type="submit">Send</button>
-        </form>
+        <div class="side" id="side"></div>
       </div>
     </div>
   </section>
 </main>
 
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="menu" id="menu" hidden role="menu"></div>
+<div class="modal-back" id="modalBack" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
 
 <script>
 (() => {
   "use strict";
 
-  /* ---------------- Storage (safe) ---------------- */
-  const KEY = "nsm-messenger-v1";
-  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
-  const save = () => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify({
-        me, sound, convos,
-        contacts: contacts.map(c => ({ id: c.id, status: c.status }))
-      }));
-    } catch {}
+  /* =============== Constants =============== */
+  const STATUS = {
+    online:  "Online",
+    busy:    "Busy",
+    brb:     "Be right back",
+    away:    "Away",
+    phone:   "On the phone",
+    lunch:   "Out to lunch",
+    offline: "Offline"
+  };
+  const GROUPS = ["Friends", "Family", "Work", "School"];
+
+  // Original display pictures: an emoji on a gradient tile.
+  const PICS = {
+    turtle: ["🐢", "#2e8a62", "#9be0b8"], cactus: ["🌵", "#6b8f2a", "#d8e98f"], guitar: ["🎸", "#b4532a", "#f6b98a"],
+    ball:   ["⚽", "#3d5fa8", "#a8c3f0"], moon:   ["🌙", "#28305e", "#7d86c9"], cat:    ["🐱", "#a33d63", "#f2a7c3"],
+    melon:  ["🍉", "#2e9e5b", "#f28b8b"], rocket: ["🚀", "#1f2f4f", "#5fa8d3"], sun:    ["🌻", "#d9901a", "#ffe08a"],
+    game:   ["🎮", "#6b4fa3", "#c4b2ec"], fox:    ["🦊", "#c2541b", "#ffc48a"], island: ["🏝️", "#1f8b8b", "#a6eadf"],
+    coffee: ["☕", "#6e4a2f", "#d9b48f"], butterfly: ["🦋", "#3b7c84", "#b3e0ff"], pizza: ["🍕", "#c23b2a", "#ffd27a"],
+    star:   ["⭐", "#8a6a1f", "#ffe9a8"]
   };
 
-  /* ---------------- Data ---------------- */
-  const STATUS_LABEL = { online: "Online", busy: "Busy", away: "Away", offline: "Offline" };
-  const COLORS = ["#1f6f8b", "#b4532a", "#6b4fa3", "#2e8a62", "#a33d63", "#3d5fa8", "#8a6a1f", "#3b7c84"];
+  const FONTS = {
+    body:  { name: "Clean",   css: 'var(--font-body)' },
+    comic: { name: "Comic",   css: "'Comic Neue', 'Comic Sans MS', cursive" },
+    serif: { name: "Classic", css: "Georgia, 'Times New Roman', serif" },
+    mono:  { name: "Typewriter", css: "'Courier New', Courier, monospace" },
+    bold:  { name: "Display", css: 'var(--font-display)' }
+  };
+  // Mid-tone colours that stay readable on both light and dark backgrounds.
+  const TEXT_COLORS = ["", "#d64545", "#e07b26", "#2e9e5b", "#1aa3a3", "#3d7fd6", "#8a5cd6", "#d14d9a", "#8a7a5c"];
 
+  const EMOTICONS = [
+    [":-)", "🙂"], [":)", "🙂"], [":-D", "😄"], [":D", "😄"], [";-)", "😉"], [";)", "😉"], [":-(", "🙁"], [":(", "🙁"],
+    [":-P", "😛"], [":P", "😛"], [":p", "😛"], [":-O", "😮"], [":O", "😮"], [":o", "😮"], [":'(", "😢"], [":@", "😠"],
+    [":$", "😳"], [":S", "😕"], [":s", "😕"], [":|", "😐"], ["8-)", "🙄"], ["(H)", "😎"], ["(h)", "😎"], ["(A)", "😇"], ["(a)", "😇"],
+    ["<3", "❤️"], ["(L)", "❤️"], ["(l)", "❤️"], ["(U)", "💔"], ["(u)", "💔"], ["(Y)", "👍"], ["(y)", "👍"], ["(N)", "👎"], ["(n)", "👎"],
+    ["(*)", "⭐"], ["(F)", "🌹"], ["(f)", "🌹"], ["(K)", "💋"], ["(k)", "💋"], ["(G)", "🎁"], ["(g)", "🎁"], ["(^)", "🎂"],
+    ["(coffee)", "☕"], ["(C)", "☕"], ["(c)", "☕"], ["(pi)", "🍕"], ["(mp)", "📱"], ["(e)", "📧"], ["(E)", "📧"],
+    ["(8)", "🎵"], ["(S)", "🌙"], ["(#)", "☀️"], ["(R)", "🌈"], ["(r)", "🌈"], ["(Z)", "👦"], ["(X)", "👧"], ["(6)", "😈"],
+    ["(ap)", "✈️"], ["(co)", "💻"], ["(so)", "⚽"], ["(%)", "🔗"], ["+o(", "🤢"], ["(brb)", "🔜"], ["(@)", "🐱"], ["(&)", "🐶"]
+  ];
+  const PICKER = ["🙂","😄","😉","😛","😮","😢","😠","😳","😕","😐","🙄","😎","😇","😈","🤢","😂","🥰","🤔","😴","🥳",
+    "❤️","💔","👍","👎","👋","🙌","👏","💪","⭐","🌹","💋","🎁","🎂","☕","🍕","🎵","🌙","☀️","🌈","✈️","💻","📱","⚽","🐱","🐶","🔥","🎉","💯"];
+
+  const WINKS = [
+    { id: "hearts",   name: "Hearts",     e: "💖", mode: "rise",  set: ["❤️", "💕", "💖", "💗"] },
+    { id: "kiss",     name: "Big kiss",   e: "💋", mode: "zoom" },
+    { id: "lol",      name: "LOL",        e: "😂", mode: "zoom" },
+    { id: "party",    name: "Party",      e: "🎉", mode: "fall",  set: ["🎉", "🎊", "✨", "🥳"] },
+    { id: "fireworks",name: "Fireworks",  e: "🎆", mode: "burst", set: ["✨", "🎆", "💥", "⭐", "🌟"] },
+    { id: "rain",     name: "Rainy day",  e: "🌧️", mode: "fall",  set: ["💧", "💧", "🌧️"] },
+    { id: "flowers",  name: "Flowers",    e: "🌸", mode: "rise",  set: ["🌸", "🌷", "🌼", "🌹"] },
+    { id: "rocket",   name: "Rocket",     e: "🚀", mode: "fly" },
+    { id: "hug",      name: "Hug",        e: "🤗", mode: "zoom" },
+    { id: "snow",     name: "Snow",       e: "❄️", mode: "fall",  set: ["❄️", "❄️", "☃️"] },
+    { id: "angry",    name: "Grrr",       e: "😡", mode: "zoom" },
+    { id: "money",    name: "Rich!",      e: "💸", mode: "fall",  set: ["💸", "💰", "🪙"] }
+  ];
+
+  const SCENES = {
+    none:   { name: "Plain",   css: "none" },
+    dawn:   { name: "Sunset",  css: "linear-gradient(170deg, rgba(242,165,65,.22), rgba(214,69,69,.10) 55%, rgba(242,165,65,0))" },
+    ocean:  { name: "Ocean",   css: "linear-gradient(180deg, rgba(31,111,139,.24), rgba(79,179,211,.06))" },
+    meadow: { name: "Meadow",  css: "linear-gradient(180deg, rgba(46,158,91,0) 45%, rgba(46,158,91,.22))" },
+    grid:   { name: "Notebook",css: "linear-gradient(rgba(61,127,214,.13) 1px, transparent 1px) 0 0 / 100% 26px" },
+    dots:   { name: "Dots",    css: "radial-gradient(rgba(127,140,155,.35) 1.5px, transparent 1.7px) 0 0 / 18px 18px" },
+    candy:  { name: "Candy",   css: "repeating-linear-gradient(135deg, rgba(209,77,154,.08) 0 14px, rgba(209,77,154,0) 14px 28px)" },
+    night:  { name: "Night",   css: "radial-gradient(rgba(255,255,255,.6) 1px, transparent 1.4px) 0 0 / 46px 46px, linear-gradient(180deg, rgba(40,48,94,.35), rgba(40,48,94,.12))" }
+  };
+
+  const GENERIC_LINES = ["Haha nice", "Really?", "I'm good, you?", "Ok cool", "Tell me more!", "lol", "Yes!", "Sounds good 🙂"];
   // Simulated contacts. All fictional.
   const SEED = [
-    { id: "yasmine", name: "Yasmine", pm: "Back from Chefchaouen ☀️", status: "online", mood: "warm",
-      lines: ["Haha yes!", "I was just thinking about that", "Did you see the photos I sent?", "Let's grab a coffee this week?", "Totally agree 😊"] },
-    { id: "karim", name: "Karim B.", pm: "Coding… do not disturb", status: "busy", mood: "short",
-      lines: ["one sec", "in a meeting, call you after", "ok 👍", "send me the link", "yep"] },
-    { id: "lea", name: "Léa", pm: "♪ listening to lo-fi beats", status: "online", mood: "warm",
-      lines: ["Oh nice!!", "Tell me more 👀", "I miss our long chats", "Same here lol", "That song is stuck in my head now 🎶"] },
-    { id: "omar", name: "Omar", pm: "Match tonight at 9 ⚽", status: "away", mood: "sport",
+    { id: "yasmine", name: "Yasmine", group: "Friends", pm: "Back from Chefchaouen ☀️", status: "online", pic: { preset: "sun" }, font: { family: "body", color: "#d14d9a" },
+      lines: ["Haha yes!", "I was just thinking about that", "Did you see the photos I sent?", "Let's grab a coffee this week?", "Totally agree :)"] },
+    { id: "karim", name: "Karim B.", group: "Work", pm: "Coding… do not disturb", status: "busy", pic: { preset: "game" }, font: { family: "mono", color: "#2e9e5b" },
+      lines: ["one sec", "in a meeting, call you after", "ok (y)", "send me the link", "yep"] },
+    { id: "lea", name: "Léa", group: "Friends", pm: "", music: "Lo-fi Girl – Rainy Café", status: "online", pic: { preset: "butterfly" }, font: { family: "comic", color: "#8a5cd6" },
+      lines: ["Oh nice!!", "Tell me more", "I miss our long chats", "Same here lol", "That song is stuck in my head now (8)"] },
+    { id: "omar", name: "Omar", group: "Friends", pm: "Match tonight at 9 (so)", status: "away", pic: { preset: "ball" }, font: { family: "bold", color: "#3d7fd6" },
       lines: ["Are you watching the match?", "We're going to win this one", "Haha classic", "Brb, getting food", "Who's coming tonight?"] },
-    { id: "sofia", name: "Sofia", pm: "Exams week 📚", status: "online", mood: "study",
-      lines: ["Can't talk long, revising", "Do you have the notes from Tuesday?", "Wish me luck!", "Ugh, so much to learn", "Thanks, you're the best"] },
-    { id: "nadia", name: "Nadia", pm: "", status: "offline", mood: "warm",
+    { id: "sofia", name: "Sofia", group: "School", pm: "Exams week 📚", status: "online", pic: { preset: "cat" }, font: { family: "serif", color: "#e07b26" },
+      lines: ["Can't talk long, revising", "Do you have the notes from Tuesday?", "Wish me luck!", "Ugh, so much to learn :(", "Thanks, you're the best"] },
+    { id: "mama", name: "Maman", group: "Family", pm: "Call me when you can ❤️", status: "lunch", pic: { preset: "island" }, font: { family: "serif", color: "#d64545" },
+      lines: ["Did you eat?", "Call me tonight", "Love you habibi ❤️", "Don't stay up too late", "Your aunt says hi"] },
+    { id: "nadia", name: "Nadia", group: "Family", pm: "", status: "offline", pic: { preset: "melon" }, font: { family: "body", color: "#1aa3a3" },
       lines: ["Sorry, just saw this!", "Hey you! How are things?", "Haha I knew it", "Let's catch up soon"] },
-    { id: "thomas", name: "Thomas", pm: "Somewhere over the Atlantic ✈️", status: "offline", mood: "short",
+    { id: "thomas", name: "Thomas", group: "Work", pm: "Somewhere over the Atlantic (ap)", status: "offline", pic: { preset: "rocket" }, font: { family: "body", color: "" },
       lines: ["Just landed!", "wifi is terrible here", "Talk later?", "👋"] },
-    { id: "ines", name: "Inès", pm: "New phone, who dis", status: "offline", mood: "warm",
+    { id: "ines", name: "Inès", group: "School", pm: "New phone, who dis", status: "offline", pic: { preset: "fox" }, font: { family: "comic", color: "#e07b26" },
       lines: ["Hiii", "OMG really?", "Send pics!", "That's hilarious 😂"] }
   ];
 
+  /* =============== Storage (always guarded) =============== */
+  const KEY = "nsm-messenger-v2";
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+  function save() {
+    const data = { me, sound, sort, contacts, convos };
+    try { localStorage.setItem(KEY, JSON.stringify(data)); }
+    catch {
+      // Storage full: keep the conversations but drop pictures from old messages.
+      try {
+        const lite = JSON.parse(JSON.stringify(data));
+        for (const c of Object.values(lite.convos)) for (const m of c.msgs) if (m.img) { m.img = null; m.dropped = true; }
+        localStorage.setItem(KEY, JSON.stringify(lite));
+      } catch {}
+    }
+  }
+
+  /* =============== State =============== */
   const saved = load();
   let me = saved.me || null;
   let sound = saved.sound !== false;
-  let convos = saved.convos || {};     // id -> [{from, text, t, kind}]
-  const contacts = SEED.map((c, i) => {
-    const s = (saved.contacts || []).find(x => x.id === c.id);
-    return { ...c, color: COLORS[i % COLORS.length], status: s ? s.status : c.status, unread: 0 };
-  });
+  let sort = saved.sort || "groups";
+  let contacts = Array.isArray(saved.contacts) && saved.contacts.length ? saved.contacts : SEED.map(c => ({ ...c }));
+  let convos = saved.convos || {};
+  for (const cv of Object.values(convos)) for (const m of cv.msgs) if (m.kind === "file") m.done = true;
   let openTabs = [];
   let active = null;
-  const collapsed = { online: false, offline: false };
-  const typingTimers = {};
+  const collapsed = {};
+  const typing = {};          // convoId -> contactId currently typing
+  let pop = null;             // open composer popover kind
 
-  /* ---------------- Helpers ---------------- */
+  /* =============== Helpers =============== */
   const $ = id => document.getElementById(id);
-  const esc = s => s.replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
-  const initials = n => n.trim().split(/\s+/).map(p => p[0]).join("").slice(0, 2).toUpperCase() || "?";
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  const rand = arr => arr[Math.floor(Math.random() * arr.length)];
   const byId = id => contacts.find(c => c.id === id);
   const fmtTime = t => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+  const fmtDate = t => new Date(t).toLocaleDateString();
+  const fmtSize = b => b < 1024 ? b + " B" : b < 1048576 ? (b / 1024).toFixed(0) + " KB" : (b / 1048576).toFixed(1) + " MB";
+  const isOff = c => c.status === "offline" || c.blocked;
+  const pmText = c => c.music ? "♫ " + c.music : (c.pm || "");
+  const myPm = () => me.music && me.music.on && me.music.song ? "♫ " + me.music.song : (me.pm || "");
 
-  const EMOTICONS = [
-    [":)", "🙂"], [":-)", "🙂"], [":D", "😄"], [":-D", "😄"], [";)", "😉"], [";-)", "😉"],
-    [":(", "🙁"], [":-(", "🙁"], [":P", "😛"], [":p", "😛"], [":O", "😮"], [":o", "😮"],
-    [":'(", "😢"], ["(H)", "😎"], ["(h)", "😎"], [":@", "😠"], ["<3", "❤️"], ["(y)", "👍"],
-    ["(Y)", "👍"], ["(n)", "👎"], ["(N)", "👎"], ["(L)", "❤️"], ["(l)", "❤️"], ["(*)", "⭐"], ["(coffee)", "☕"]
-  ];
-  const PICKER = ["🙂","😄","😉","😛","😮","😢","😎","😠","❤️","👍","👎","⭐","☕","😂","🥰","🤔","🙌","🎉","😴","🔥","🍕","🎶","⚽","👋"];
   const emoticonize = text => {
-    // Replace text shortcuts only when surrounded by start/end or whitespace.
     let out = text;
     for (const [code, emo] of EMOTICONS) {
-      const re = new RegExp("(^|\\s)" + code.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?=\\s|$)", "g");
+      const re = new RegExp("(^|\\s)" + code.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?=\\s|$|[.,!?])", "g");
       out = out.replace(re, "$1" + emo);
     }
     return out;
   };
 
-  /* ---------------- Sound (Web Audio, starts after a click) ---------------- */
-  let ctx = null;
-  const tone = (freqs, dur = 0.12) => {
+  function dp(pic, status, size = "", extra = "") {
+    const p = PICS[(pic && pic.preset) || "star"] || PICS.star;
+    const inner = pic && pic.img ? `<img src="${esc(pic.img)}" alt="">` : `<span class="dp-emo">${p[0]}</span>`;
+    return `<span class="dp ${size} st-${status} ${extra}" style="--g1:${p[1]};--g2:${p[2]}">${inner}</span>`;
+  }
+  const contactDp = (c, size) => dp(c.pic, c.blocked ? "offline" : c.status, size, (c.blocked ? "blocked " : "") + (isOff(c) ? "offline-look" : ""));
+  const myDp = size => dp(me.pic, me.status, size);
+
+  const fontStyle = f => {
+    f = f || {};
+    return `font-family:${(FONTS[f.family] || FONTS.body).css};${f.color ? "color:" + f.color + ";" : ""}font-weight:${f.bold ? 700 : 400};font-style:${f.italic ? "italic" : "normal"}`;
+  };
+
+  function getConvo(id) {
+    if (!convos[id]) convos[id] = { id, members: [id], msgs: [], scene: "none", unread: 0 };
+    return convos[id];
+  }
+  const convoTitle = cv => cv.members.map(id => (byId(id) || { name: "?" }).name).join(", ");
+  const convoMembers = cv => cv.members.map(byId).filter(Boolean);
+
+  /* =============== Sounds (Web Audio, start after a click) =============== */
+  let ac = null;
+  function tone(freqs, dur = 0.12, type = "sine", vol = 0.16) {
     if (!sound) return;
     try {
-      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-      let t = ctx.currentTime;
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      let t = ac.currentTime;
       for (const f of freqs) {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = "sine"; o.frequency.value = f;
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = type; o.frequency.value = f;
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
+        o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur + 0.02);
         t += dur * 0.8;
       }
     } catch {}
-  };
+  }
   const sfx = {
     message: () => tone([880, 1175]),
-    signin: () => tone([523, 659, 784], 0.14),
-    nudge: () => tone([180, 140, 180, 140], 0.08)
+    signin:  () => tone([523, 659, 784, 1046], 0.13),
+    wizz:    () => tone([150, 120, 150, 120, 150, 120], 0.07, "square", 0.08),
+    wink:    () => tone([660, 880, 1320], 0.1, "triangle"),
+    done:    () => tone([1046, 1318], 0.09, "triangle")
   };
 
-  /* ---------------- Rendering: me ---------------- */
+  /* =============== Render: me =============== */
+  function fillStatusSelect(sel, appearOffline) {
+    sel.innerHTML = Object.entries(STATUS).map(([k, v]) => `<option value="${k}">${k === "offline" && appearOffline ? "Appear offline" : v}</option>`).join("");
+  }
   function renderMe() {
     $("meName").value = me.name;
     $("meStatus").value = me.status;
     $("mePm").value = me.pm || "";
-    const a = $("meAvatar");
-    a.textContent = initials(me.name);
-    a.style.background = "#1f6f8b";
-    a.className = "avatar lg st-" + me.status;
+    $("meDpBtn").innerHTML = myDp("lg");
+    $("musicOn").checked = !!(me.music && me.music.on);
+    $("musicSong").value = (me.music && me.music.song) || "";
+    $("musicSong").disabled = !$("musicOn").checked;
     const sb = $("soundBtn");
     sb.title = sound ? "Sounds on" : "Sounds off";
     sb.setAttribute("aria-label", sound ? "Turn sounds off" : "Turn sounds on");
     sb.style.opacity = sound ? 1 : 0.45;
+    document.querySelectorAll("[data-sort]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sort === sort)));
   }
 
-  /* ---------------- Rendering: contacts ---------------- */
+  /* =============== Render: contacts =============== */
   function contactRow(c) {
-    const off = c.status === "offline";
-    return `<button class="contact ${off ? "is-offline" : ""} ${c.id === active ? "active" : ""}" data-id="${c.id}" title="${esc(c.name)} (${STATUS_LABEL[c.status]})">
-      <span class="avatar sm st-${c.status}" style="background:${c.color}">${esc(initials(c.name))}</span>
+    const cv = convos[c.id];
+    const unread = cv && cv.unread;
+    const st = c.blocked ? "Blocked" : c.status !== "online" && c.status !== "offline" ? STATUS[c.status] : "";
+    return `<div class="contact ${isOff(c) ? "is-offline" : ""} ${c.id === active ? "active" : ""}" data-id="${c.id}" tabindex="0" role="button" aria-label="Chat with ${esc(c.name)}, ${c.blocked ? "blocked" : STATUS[c.status]}">
+      ${contactDp(c, "sm")}
       <span class="c-info">
-        <span class="c-name">${esc(c.name)}${c.status !== "online" && !off ? ` <span style="font-weight:400;color:var(--muted)">(${STATUS_LABEL[c.status]})</span>` : ""}</span>
-        ${c.pm ? `<span class="c-pm">${esc(c.pm)}</span>` : ""}
+        <span class="c-name">${esc(c.name)}${st ? ` <small>(${st})</small>` : ""}</span>
+        ${pmText(c) ? `<span class="c-pm">${esc(emoticonize(pmText(c)))}</span>` : ""}
       </span>
-      ${c.unread ? `<span class="badge" aria-label="${c.unread} unread">${c.unread}</span>` : ""}
-    </button>`;
+      ${unread ? `<span class="badge" aria-label="${unread} unread">${unread}</span>` : ""}
+      <button class="c-menu" data-menu="${c.id}" aria-label="More actions for ${esc(c.name)}" aria-haspopup="menu">⋯</button>
+    </div>`;
   }
   function renderContacts() {
     const q = $("search").value.trim().toLowerCase();
-    const list = contacts.filter(c => !q || c.name.toLowerCase().includes(q) || (c.pm || "").toLowerCase().includes(q));
-    const on = list.filter(c => c.status !== "offline");
-    const off = list.filter(c => c.status === "offline");
-    const group = (key, label, items) => `
-      <button class="group-title" data-group="${key}" aria-expanded="${!collapsed[key]}"><span class="chev">▾</span>${label} (${items.length})</button>
+    const list = contacts.filter(c => !q || c.name.toLowerCase().includes(q) || pmText(c).toLowerCase().includes(q));
+    const section = (key, label, items, total) => `
+      <button class="group-title" data-group="${key}" aria-expanded="${!collapsed[key]}"><span class="chev">▾</span>${esc(label)} (${total})</button>
       ${collapsed[key] ? "" : items.map(contactRow).join("")}`;
-    $("contacts").innerHTML = group("online", "Online", on) + group("offline", "Offline", off) +
-      (list.length ? "" : `<p style="color:var(--muted);padding:12px 8px;margin:0">No contact matches “${esc(q)}”.</p>`);
+    let html = "";
+    if (sort === "groups") {
+      for (const g of GROUPS) {
+        const items = list.filter(c => c.group === g).sort((a, b) => isOff(a) - isOff(b));
+        if (!items.length && q) continue;
+        html += section("g-" + g, g, items, `${items.filter(c => !isOff(c)).length}/${items.length}`);
+      }
+    } else {
+      const on = list.filter(c => !isOff(c)), off = list.filter(isOff);
+      html += section("s-on", "Online", on, on.length) + section("s-off", "Offline", off, off.length);
+    }
+    if (!list.length) html += `<p style="color:var(--muted);padding:12px 8px;margin:0">No contact matches “${esc(q)}”.</p>`;
+    $("contacts").innerHTML = html;
   }
 
-  /* ---------------- Rendering: tabs & conversation ---------------- */
+  /* =============== Render: tabs =============== */
   function renderTabs() {
     $("tabs").innerHTML = openTabs.map(id => {
-      const c = byId(id);
+      const cv = convos[id];
+      const first = convoMembers(cv)[0] || { status: "offline" };
       return `<div class="tab ${id === active ? "active" : ""}" role="tab" aria-selected="${id === active}" data-tab="${id}" tabindex="0">
-        <span class="tab-dot st-${c.status}" aria-label="${STATUS_LABEL[c.status]}"></span>
-        ${esc(c.name)}${c.unread ? ` <span class="badge">${c.unread}</span>` : ""}
-        <button class="x" data-close="${id}" aria-label="Close conversation with ${esc(c.name)}">✕</button>
+        <span class="tab-dot st-${cv.members.length > 1 ? "online" : (first.blocked ? "offline" : first.status)}"></span>
+        <span class="t-name">${esc(convoTitle(cv))}</span>${cv.unread ? `<span class="badge">${cv.unread}</span>` : ""}
+        <button class="x" data-close="${id}" aria-label="Close conversation">✕</button>
       </div>`;
     }).join("");
     $("empty").hidden = !!active;
     $("convo").hidden = !active;
   }
 
+  /* =============== Render: conversation =============== */
   function renderHeader() {
     if (!active) return;
-    const c = byId(active);
-    const a = $("hAvatar");
-    a.textContent = initials(c.name); a.style.background = c.color; a.className = "avatar st-" + c.status;
-    $("hName").textContent = c.name;
-    $("hSub").textContent = STATUS_LABEL[c.status] + (c.pm ? " · " + c.pm : "");
+    const cv = convos[active], ms = convoMembers(cv);
+    if (ms.length === 1) {
+      const c = ms[0];
+      $("hDp").innerHTML = contactDp(c, "");
+      $("hName").textContent = c.name;
+      $("hSub").textContent = (c.blocked ? "Blocked" : STATUS[c.status]) + (pmText(c) ? " · " + emoticonize(pmText(c)) : "");
+    } else {
+      $("hDp").innerHTML = dp({ preset: "star" }, "online", "");
+      $("hName").textContent = convoTitle(cv);
+      $("hSub").textContent = `Group conversation · ${ms.length + 1} people`;
+    }
+    const them = ms[0];
+    $("side").innerHTML = `
+      <div class="who-pic">${them ? contactDp(them, "xl") : ""}<span>${them ? esc(them.name) : ""}</span></div>
+      <div class="who-pic"><button id="sideMe" title="Change your display picture">${myDp("xl")}</button><span>${esc(me.name)} (you)</span></div>`;
+    $("messages").style.background = SCENES[cv.scene] ? SCENES[cv.scene].css : "none";
   }
 
   function renderMessages() {
     if (!active) return;
-    const c = byId(active);
-    const msgs = convos[active] || [];
-    let html = msgs.length ? "" : `<div class="sys">This is the start of your conversation with ${esc(c.name)}. Say hi :)</div>`;
-    if (c.status === "offline") html += `<div class="sys">${esc(c.name)} appears to be offline. Messages will be delivered when they sign in.</div>`;
-    let prev = null;
-    for (const m of msgs) {
-      if (m.kind === "nudge") {
-        html += `<div class="sys nudge">${m.from === "me" ? "You sent a nudge." : esc(c.name) + " just sent you a nudge!"} · ${fmtTime(m.t)}</div>`;
-        prev = null; continue;
-      }
+    const cv = convos[active], ms = convoMembers(cv);
+    const nameOf = id => id === "me" ? me.name : (byId(id) || { name: "Someone" }).name;
+    let html = "";
+    if (!cv.msgs.length) html += `<div class="sys">This is the start of your conversation with ${esc(convoTitle(cv))}. Say hi :)</div>`;
+    if (ms.length === 1 && ms[0].blocked) html += `<div class="sys">You have blocked ${esc(ms[0].name)}. They can't see you or send you messages. Unblock them from the ⋯ menu to chat again.</div>`;
+    else if (ms.length === 1 && ms[0].status === "offline") html += `<div class="sys">${esc(ms[0].name)} appears to be offline. Your messages will be delivered when they sign in.</div>`;
+    let prev = null, prevT = 0;
+    for (const m of cv.msgs) {
       const mine = m.from === "me";
-      const showWho = prev !== m.from;
-      html += `<div class="msg ${mine ? "mine" : ""}">
-        ${showWho ? `<div class="who">${mine ? esc(me.name) : esc(c.name)} says:</div>` : ""}
-        <div class="bubble">${esc(m.text)}</div>
-        <div class="time">${fmtTime(m.t)}</div>
-      </div>`;
-      prev = m.from;
+      if (m.kind === "text") {
+        const head = prev !== m.from || m.t - prevT > 5 * 60000;
+        html += `<div class="m ${mine ? "mine" : ""}">
+          ${head ? `<div class="who"><span>${esc(nameOf(m.from))} says:</span><time>${fmtTime(m.t)}</time></div>` : ""}
+          <div class="txt" style="${fontStyle(m.font)}">${esc(m.text)}</div></div>`;
+        prev = m.from; prevT = m.t; continue;
+      }
+      prev = null;
+      if (m.kind === "wizz") {
+        html += `<div class="sys wizz">${mine ? "You have just sent a Wizz!" : esc(nameOf(m.from)) + " has just sent you a Wizz!"} <time>${fmtTime(m.t)}</time></div>`;
+      } else if (m.kind === "wink") {
+        const w = WINKS.find(x => x.id === m.wink) || WINKS[0];
+        html += `<div class="sys wink">${mine ? "You sent a wink:" : esc(nameOf(m.from)) + " sent you a wink:"} ${w.e} ${esc(w.name)} <button class="linkish" data-replay="${w.id}">Play again</button></div>`;
+      } else if (m.kind === "file") {
+        html += `<div class="m ${mine ? "mine" : ""}"><div class="who"><span>${esc(nameOf(m.from))} sent a file:</span><time>${fmtTime(m.t)}</time></div>
+          <div class="card">
+            ${m.done && m.img ? `<img src="${esc(m.img)}" alt="${esc(m.name)}">` : ""}
+            <div class="f-row"><span style="font-size:24px">${m.img || m.dropped ? "🖼️" : "📄"}</span><div style="min-width:0"><div class="f-name">${esc(m.name)}</div>
+            <div class="f-meta">${fmtSize(m.size)} · ${m.done ? (m.dropped ? "Picture removed to save space" : "Transfer complete ✓") : "Sending…"}</div></div></div>
+            ${m.done ? "" : `<div class="bar"><i></i></div>`}
+          </div></div>`;
+      } else if (m.kind === "ink") {
+        html += `<div class="m ${mine ? "mine" : ""}"><div class="who"><span>${esc(nameOf(m.from))} says (handwriting):</span><time>${fmtTime(m.t)}</time></div>
+          <div class="card">${m.img ? `<img src="${esc(m.img)}" alt="Handwritten message">` : "Drawing removed to save space"}</div></div>`;
+      } else if (m.kind === "sys") {
+        html += `<div class="sys">${esc(m.text)}</div>`;
+      }
     }
     const box = $("messages");
     box.innerHTML = html;
     box.scrollTop = box.scrollHeight;
+    renderStatusline();
   }
 
-  function renderTyping() {
-    const el = $("typing");
-    if (active && typingTimers[active]) {
-      el.innerHTML = `${esc(byId(active).name)} is typing<span class="dots"><span>.</span><span>.</span><span>.</span></span>`;
-    } else el.textContent = "";
+  function renderStatusline() {
+    const el = $("statusline");
+    if (!active) return;
+    const who = typing[active];
+    if (who) {
+      el.className = "statusline typing";
+      el.innerHTML = `${esc(byId(who).name)} is writing a message<span class="dots"><span>.</span><span>.</span><span>.</span></span>`;
+      return;
+    }
+    el.className = "statusline";
+    const last = [...convos[active].msgs].reverse().find(m => m.from !== "me" && m.kind !== "sys");
+    el.textContent = last ? `Last message received at ${fmtTime(last.t)} on ${fmtDate(last.t)}.` : "";
   }
 
-  function renderAll() { renderMe(); renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping(); }
+  function applyInputFont() {
+    const ta = $("input");
+    const f = me.font || {};
+    ta.style.fontFamily = (FONTS[f.family] || FONTS.body).css;
+    ta.style.color = f.color || "";
+    ta.style.fontWeight = f.bold ? 700 : 400;
+    ta.style.fontStyle = f.italic ? "italic" : "normal";
+  }
 
-  /* ---------------- Actions ---------------- */
+  function renderConvo() { renderTabs(); renderHeader(); renderMessages(); }
+  function renderAll() { renderMe(); renderContacts(); renderConvo(); applyInputFont(); }
+
+  /* =============== Conversations =============== */
   function openChat(id) {
+    const cv = getConvo(id);
     if (!openTabs.includes(id)) openTabs.push(id);
-    active = id;
-    byId(id).unread = 0;
+    active = id; cv.unread = 0;
     $("app").classList.add("chatting");
-    renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping();
-    $("picker").hidden = true;
-    setTimeout(() => $("input").focus(), 0);
+    closePop(); save();
+    renderContacts(); renderConvo();
+    setTimeout(() => $("input").focus({ preventScroll: true }), 0);
   }
   function closeChat(id) {
     openTabs = openTabs.filter(x => x !== id);
     if (active === id) active = openTabs[openTabs.length - 1] || null;
     if (!active) $("app").classList.remove("chatting");
-    renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping();
+    closePop(); renderContacts(); renderConvo();
   }
   function push(id, msg) {
-    (convos[id] = convos[id] || []).push(msg);
-    if (convos[id].length > 300) convos[id] = convos[id].slice(-300);
+    const cv = getConvo(id);
+    cv.msgs.push(msg);
+    if (cv.msgs.length > 300) cv.msgs = cv.msgs.slice(-300);
     save();
+    return msg;
   }
 
-  function incoming(id, msg) {
-    push(id, msg);
-    const c = byId(id);
-    if (!openTabs.includes(id)) openTabs.push(id);
-    if (id !== active || document.hidden) {
-      c.unread++;
-      toast(c, msg.kind === "nudge" ? "sent you a nudge!" : msg.text);
+  // A message arrives from a contact.
+  function incoming(cid, msg) {
+    const cv = getConvo(cid);
+    const c = byId(msg.from);
+    if (!c || c.blocked) return;
+    if (msg.kind === "text") msg.text = emoticonize(msg.text);
+    push(cid, msg);
+    if (!openTabs.includes(cid)) openTabs.push(cid);
+    if (!active) { active = cid; $("app").classList.add("chatting"); }
+    const viewing = cid === active && !document.hidden;
+    if (!viewing) {
+      cv.unread = (cv.unread || 0) + 1; save();
+      toast(c, msg.kind === "wizz" ? "has just sent you a Wizz!" : msg.kind === "wink" ? "sent you a wink" : msg.kind === "file" ? "sent you a file" : msg.text, msg.kind === "wizz");
     }
-    if (msg.kind === "nudge") { sfx.nudge(); shake(); } else sfx.message();
-    if (!active) active = id;
-    renderContacts(); renderTabs(); renderHeader(); renderMessages(); renderTyping();
-    if (id !== active) { const t = document.querySelector(`[data-tab="${id}"]`); t && t.classList.add("flash"); }
+    if (msg.kind === "wizz") { sfx.wizz(); shake(); }
+    else if (msg.kind === "wink") { sfx.wink(); if (cid === active) playWink(msg.wink); }
+    else sfx.message();
+    renderContacts(); renderConvo();
+    if (!viewing) { const t = document.querySelector(`[data-tab="${cid}"]`); t && t.classList.add("flash"); }
   }
 
   function shake() {
-    const p = $("chatPane");
-    p.classList.remove("shake"); void p.offsetWidth; p.classList.add("shake");
+    const a = $("app");
+    a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake");
   }
 
-  // Simulated reply: picks a contextual line, shows "typing", then answers.
-  function scheduleReply(id, userText) {
-    const c = byId(id);
-    if (c.status === "offline" || me.status === "offline") return;
-    if (typingTimers[id]) return;
-    const delayStart = c.status === "away" ? 3000 + Math.random() * 4000 : 600 + Math.random() * 1200;
+  // Who can answer in this conversation right now.
+  const responders = cv => convoMembers(cv).filter(c => !isOff(c));
+
+  // Simulated reply: "is writing a message…", then an answer.
+  function scheduleReply(cid, kind, payload) {
+    const cv = getConvo(cid);
+    if (me.status === "offline") return;
+    const avail = responders(cv);
+    if (!avail.length) {
+      if (cv.members.length === 1 && !byId(cv.members[0]).blocked) { cv.pendingOffline = true; save(); }
+      return;
+    }
+    if (typing[cid]) return;
+    const c = rand(avail);
+    const slow = ["away", "brb", "lunch", "phone"].includes(c.status);
     setTimeout(() => {
-      typingTimers[id] = true; renderTyping();
-      const text = replyFor(c, userText);
+      if (isOff(c)) return;
+      typing[cid] = c.id; if (cid === active) renderStatusline();
+      const text = replyFor(c, kind, payload);
       setTimeout(() => {
-        delete typingTimers[id];
-        incoming(id, { from: id, text, t: Date.now() });
-        renderTyping();
+        delete typing[cid];
+        incoming(cid, { kind: "text", from: c.id, text: emoticonize(text), font: c.font, t: Date.now() });
+        // Sometimes they answer with a wink or a Wizz of their own.
+        const r = Math.random();
+        if (kind === "wizz" && r < 0.45) setTimeout(() => incoming(cid, { kind: "wizz", from: c.id, t: Date.now() }), 1200);
+        else if (kind === "text" && r < 0.08) setTimeout(() => incoming(cid, { kind: "wink", from: c.id, wink: rand(WINKS).id, t: Date.now() }), 1500);
       }, 900 + Math.min(text.length * 45, 2600));
-    }, delayStart);
+    }, slow ? 3500 + Math.random() * 4000 : 600 + Math.random() * 1200);
   }
 
-  function replyFor(c, text) {
-    const t = text.toLowerCase();
-    if (/\b(hi|hey|hello|salut|salam|bonjour|yo)\b/.test(t)) return rand([`Hey ${me.name}! 😄`, `Heyy, what's up?`, `Hi! Long time no see`]);
-    if (/how are (you|u)|ça va|ca va|labas/.test(t)) return rand(["All good, and you?", "Pretty busy but fine 🙂", "Great now that you're here haha"]);
-    if (/\?$/.test(t.trim())) return rand(["Hmm good question 🤔", "Yes, I think so", "Not sure, let me check", "Why do you ask? 😛"]);
-    if (/(bye|ciao|later|see you|bslama)/.test(t)) return rand(["Bye! 👋", "Talk later!", "See you ❤️"]);
-    if (/(lol|haha|mdr|😂)/.test(t)) return rand(["😂😂", "Haha stop", "I'm dying lol"]);
-    return rand(c.lines);
+  function replyFor(c, kind, payload) {
+    if (kind === "wizz") return rand(["Hey! Stop shaking my window 😂", "Ok ok I'm here!", "WHAT?? 😄", "Wizz yourself!", "Ahh you scared me"]);
+    if (kind === "wink") return rand(["Haha love that wink", "😂😂 where do you find those", "Aww", "lol nice one"]);
+    if (kind === "file") return payload ? rand(["Nice pic!", "Haha where is that?", "Wow 😮", "Send more!"]) : rand(["Got it, thanks!", "Received (y)", "I'll open it later"]);
+    if (kind === "ink") return rand(["Haha what did you draw 😂", "You're an artist!", "Cute drawing"]);
+    if (kind === "game") return payload;
+    const t = (payload || "").toLowerCase();
+    if (/\b(hi|hey|hello|salut|salam|bonjour|yo|cc|coucou)\b/.test(t)) return rand([`Hey ${me.name}! :D`, "Heyy, what's up?", "Hi! Long time no see", "Coucou!"]);
+    if (/how are (you|u)|ça va|ca va|labas|cv\b/.test(t)) return rand(["All good, and you?", "Pretty busy but fine :)", "Great now that you're here haha", "Ça va et toi?"]);
+    if (/(bye|ciao|later|see you|bslama|a\+|bisous)/.test(t)) return rand(["Bye! 👋", "Talk later!", "See you <3", "Bisous!"]);
+    if (/(lol|haha|mdr|ptdr|😂)/.test(t)) return rand(["😂😂", "Haha stop", "I'm dying lol", "mdrrr"]);
+    if (/\?\s*$/.test(t)) return rand(["Hmm good question", "Yes, I think so", "Not sure, let me check", "Why do you ask? :P"]);
+    return rand(c.lines && c.lines.length ? c.lines : GENERIC_LINES);
   }
 
-  function send(text) {
+  /* =============== Sending =============== */
+  const canSend = () => {
+    const cv = convos[active];
+    return !(cv.members.length === 1 && byId(cv.members[0]).blocked);
+  };
+  function sendText(text) {
     text = emoticonize(text.trim());
-    if (!text || !active) return;
-    push(active, { from: "me", text, t: Date.now() });
+    if (!text || !active || !canSend()) return;
+    push(active, { kind: "text", from: "me", text, font: { ...(me.font || {}) }, t: Date.now() });
     renderMessages();
-    scheduleReply(active, text);
+    scheduleReply(active, "text", text);
+  }
+  function sendWizz(cid = active) {
+    if (!cid) return;
+    if (cid !== active) openChat(cid);
+    if (!canSend()) return;
+    const last = convos[cid].msgs.filter(m => m.kind === "wizz" && m.from === "me").pop();
+    if (last && Date.now() - last.t < 5000) { toast(null, "You can't send Wizzes too often. Wait a few seconds."); return; }
+    push(cid, { kind: "wizz", from: "me", t: Date.now() });
+    sfx.wizz(); shake(); renderMessages();
+    scheduleReply(cid, "wizz");
+  }
+  function sendWink(id) {
+    if (!active || !canSend()) return;
+    push(active, { kind: "wink", from: "me", wink: id, t: Date.now() });
+    sfx.wink(); playWink(id); renderMessages();
+    scheduleReply(active, "wink");
+  }
+  function sendFile(file) {
+    if (!active || !file || !canSend()) return;
+    const cid = active;
+    const finish = img => {
+      const m = push(cid, { kind: "file", from: "me", name: file.name, size: file.size, img: img || null, done: false, t: Date.now() });
+      renderMessages();
+      setTimeout(() => {
+        m.done = true; save(); sfx.done();
+        if (cid === active) renderMessages();
+        scheduleReply(cid, "file", !!img);
+      }, 1500);
+    };
+    if (/^image\//.test(file.type) && file.size < 15 * 1048576) shrinkImage(file, 520, finish);
+    else finish(null);
+  }
+  function shrinkImage(file, max, cb) {
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const s = Math.min(1, max / Math.max(img.width, img.height));
+        const cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.round(img.width * s)); cv.height = Math.max(1, Math.round(img.height * s));
+        const g = cv.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height);
+        g.drawImage(img, 0, 0, cv.width, cv.height);
+        try { cb(cv.toDataURL("image/jpeg", 0.82)); } catch { cb(null); }
+      };
+      img.onerror = () => cb(null);
+      img.src = r.result;
+    };
+    r.onerror = () => cb(null);
+    r.readAsDataURL(file);
   }
 
-  function nudge() {
-    if (!active) return;
-    const last = (convos[active] || []).filter(m => m.kind === "nudge" && m.from === "me").pop();
-    if (last && Date.now() - last.t < 5000) { toast(null, "Wait a few seconds before sending another nudge."); return; }
-    push(active, { from: "me", kind: "nudge", t: Date.now() });
-    sfx.nudge(); shake(); renderMessages();
-    const c = byId(active), id = active;
-    if (c.status !== "offline" && Math.random() < 0.5) {
-      setTimeout(() => incoming(id, { from: id, text: rand(["Hey! Stop shaking my window 😂", "Ok ok I'm here!", "What?? 😄"]), t: Date.now() }), 1800);
+  /* =============== Winks =============== */
+  function playWink(id) {
+    const w = WINKS.find(x => x.id === id); if (!w) return;
+    const layer = document.createElement("div");
+    layer.className = "wink-layer";
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const add = (cls, e, style) => { const s = document.createElement("span"); s.className = "wp " + cls; s.textContent = e; s.style.cssText = style; layer.appendChild(s); };
+    if (w.mode === "zoom" || reduce) add("zoom", w.e, "");
+    else if (w.mode === "rise" || w.mode === "fall") {
+      for (let i = 0; i < 28; i++) add(w.mode, rand(w.set), `left:${Math.random() * 96}%;font-size:${22 + Math.random() * 30}px;--d:${2 + Math.random() * 1.6}s;--delay:${Math.random() * 1.4}s`);
+    } else if (w.mode === "burst") {
+      for (let b = 0; b < 3; b++) for (let i = 0; i < 16; i++) {
+        const a = (i / 16) * Math.PI * 2, r = 110 + Math.random() * 120;
+        add("burst", rand(w.set), `font-size:${18 + Math.random() * 18}px;--dx:${Math.cos(a) * r + (b - 1) * 140}px;--dy:${Math.sin(a) * r + (b === 1 ? -60 : 30)}px;--delay:${b * 0.55}s`);
+      }
+    } else if (w.mode === "fly") add("fly", w.e, "");
+    $("chatPane").appendChild(layer);
+    setTimeout(() => layer.remove(), 4200);
+  }
+
+  /* =============== Toasts =============== */
+  function toast(c, text, isWizz) {
+    const el = document.createElement("button");
+    el.className = "toast" + (isWizz ? " wizz" : "");
+    el.innerHTML = c
+      ? `${contactDp(c, "sm")}<div style="min-width:0"><b>${esc(c.name)}</b><span class="t">${esc(text)}</span></div>`
+      : `<div><span class="t" style="white-space:normal">${esc(text)}</span></div>`;
+    el.addEventListener("click", () => { if (c) openChat(c.id); el.remove(); });
+    $("toasts").appendChild(el);
+    while ($("toasts").children.length > 4) $("toasts").firstChild.remove();
+    setTimeout(() => el.remove(), 5500);
+  }
+
+  /* =============== Composer popovers =============== */
+  function closePop() {
+    pop = null; $("pop").hidden = true;
+    document.querySelectorAll("[data-pop]").forEach(b => b.setAttribute("aria-expanded", "false"));
+  }
+  function openPop(kind) {
+    if (pop === kind) { closePop(); return; }
+    pop = kind;
+    document.querySelectorAll("[data-pop]").forEach(b => b.setAttribute("aria-expanded", String(b.dataset.pop === kind)));
+    const p = $("pop"); p.hidden = false;
+    if (kind === "emo") {
+      p.innerHTML = `<div class="grid">${PICKER.map(e => `<button type="button" data-emo="${e}" aria-label="Insert ${e}">${e}</button>`).join("")}</div>
+        <div class="hint">Shortcuts work too: :) :D ;) :P :( :'( (H) (L) (Y) (N) (K) (F) (coffee) (8) &lt;3</div>`;
+    } else if (kind === "wink") {
+      p.innerHTML = `<div class="label">Send a wink</div><div class="wink-grid">${WINKS.map(w => `<button type="button" data-wink="${w.id}"><span>${w.e}</span>${esc(w.name)}</button>`).join("")}</div>`;
+    } else if (kind === "font") {
+      const f = me.font || {};
+      p.innerHTML = `<div class="label">Font</div>
+        <div class="chips">${Object.entries(FONTS).map(([k, v]) => `<button type="button" class="chip" data-family="${k}" aria-pressed="${(f.family || "body") === k}" style="font-family:${v.css}">${v.name}</button>`).join("")}</div>
+        <div class="label">Colour</div>
+        <div class="chips">${TEXT_COLORS.map(c => `<button type="button" class="swatch" data-color="${c}" aria-pressed="${(f.color || "") === c}" aria-label="${c ? "Colour " + c : "Default colour"}" style="background:${c || "var(--fg)"}"></button>`).join("")}</div>
+        <div class="chips">
+          <button type="button" class="chip" data-style="bold" aria-pressed="${!!f.bold}" style="font-weight:700">Bold</button>
+          <button type="button" class="chip" data-style="italic" aria-pressed="${!!f.italic}" style="font-style:italic">Italic</button>
+        </div>
+        <div class="hint">Your contacts see your messages in this style.</div>`;
     }
   }
+  $("pop").addEventListener("click", e => {
+    e.stopPropagation(); // the popover re-renders itself; don't let the outside-click handler close it
+    const t = e.target.closest("button"); if (!t) return;
+    if (t.dataset.emo) {
+      const ta = $("input"), s = ta.selectionStart ?? ta.value.length, en = ta.selectionEnd ?? s;
+      ta.value = ta.value.slice(0, s) + t.dataset.emo + ta.value.slice(en);
+      ta.focus(); ta.selectionStart = ta.selectionEnd = s + t.dataset.emo.length;
+    } else if (t.dataset.wink) { closePop(); sendWink(t.dataset.wink); }
+    else if (t.dataset.family || t.dataset.color !== undefined || t.dataset.style) {
+      me.font = me.font || {};
+      if (t.dataset.family) me.font.family = t.dataset.family;
+      else if (t.dataset.style) me.font[t.dataset.style] = !me.font[t.dataset.style];
+      else me.font.color = t.dataset.color;
+      save(); applyInputFont(); pop = null; openPop("font");
+    }
+  });
 
-  /* ---------------- Toasts ---------------- */
-  function toast(c, text) {
-    const el = document.createElement("button");
-    el.className = "toast";
-    el.innerHTML = c
-      ? `<span class="avatar sm st-${c.status}" style="background:${c.color}">${esc(initials(c.name))}</span><div style="min-width:0"><b>${esc(c.name)}</b><span>${esc(text.length > 70 ? text.slice(0, 70) + "…" : text)}</span></div>`
-      : `<div><span>${esc(text)}</span></div>`;
-    if (c) el.addEventListener("click", () => { openChat(c.id); el.remove(); });
-    else el.addEventListener("click", () => el.remove());
-    $("toasts").appendChild(el);
-    setTimeout(() => el.remove(), 5000);
+  /* =============== Modals =============== */
+  let lastFocus = null;
+  function openModal(html, mount) {
+    lastFocus = document.activeElement;
+    $("modal").innerHTML = html;
+    $("modalBack").hidden = false;
+    mount && mount($("modal"));
+    const f = $("modal").querySelector("button, input, select"); f && f.focus();
+  }
+  function closeModal() {
+    $("modalBack").hidden = true; $("modal").innerHTML = "";
+    lastFocus && lastFocus.focus && lastFocus.focus();
+  }
+  $("modalBack").addEventListener("click", e => { if (e.target === $("modalBack") || e.target.closest("[data-close-modal]")) closeModal(); });
+
+  function dpModal() {
+    let choice = me.pic || { preset: "star" };
+    openModal(`<h2>Change display picture</h2>
+      <div class="dp-grid">${Object.keys(PICS).map(k => `<button type="button" data-pic="${k}" aria-pressed="${choice.preset === k && !choice.img}" aria-label="Picture ${k}">${dp({ preset: k }, me.status, "lg")}</button>`).join("")}</div>
+      <div class="field"><label for="dpFile">Or use your own picture</label><input type="file" id="dpFile" accept="image/*"></div>
+      <div id="dpPreview" style="display:flex;gap:12px;align-items:center"></div>
+      <div class="row"><button class="btn ghost" data-close-modal>Cancel</button><button class="btn" id="dpSave">Save picture</button></div>`, m => {
+      const preview = () => { m.querySelector("#dpPreview").innerHTML = dp(choice, me.status, "lg") + `<span style="color:var(--muted)">Preview</span>`; };
+      preview();
+      m.querySelector(".dp-grid").addEventListener("click", e => {
+        const b = e.target.closest("[data-pic]"); if (!b) return;
+        choice = { preset: b.dataset.pic };
+        m.querySelectorAll("[data-pic]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+        preview();
+      });
+      m.querySelector("#dpFile").addEventListener("change", e => {
+        const f = e.target.files[0]; if (!f) return;
+        shrinkImage(f, 160, url => { if (url) { choice = { preset: "star", img: url }; m.querySelectorAll("[data-pic]").forEach(x => x.setAttribute("aria-pressed", "false")); preview(); } });
+      });
+      m.querySelector("#dpSave").addEventListener("click", () => { me.pic = choice; save(); closeModal(); renderMe(); if (active) renderHeader(); });
+    });
   }
 
-  /* ---------------- Simulated presence ---------------- */
+  function addContactModal() {
+    openModal(`<h2>Add a contact</h2>
+      <div class="field"><label for="acName">Name or e-mail</label><input id="acName" maxlength="32" placeholder="e.g. Rania"></div>
+      <div class="field"><label for="acGroup">Group</label><select id="acGroup">${GROUPS.map(g => `<option>${g}</option>`).join("")}</select></div>
+      <p style="margin:0;color:var(--muted);font-size:13px">In this demo, the new contact accepts your invitation after a few seconds.</p>
+      <div class="row"><button class="btn ghost" data-close-modal>Cancel</button><button class="btn" id="acAdd">Add contact</button></div>`, m => {
+      const go = () => {
+        const name = m.querySelector("#acName").value.trim().replace(/@.*/, "");
+        if (!name) { m.querySelector("#acName").focus(); return; }
+        const c = { id: "c" + Date.now(), name, group: m.querySelector("#acGroup").value, pm: "", status: "offline",
+          pic: { preset: rand(Object.keys(PICS)) }, font: { family: rand(Object.keys(FONTS)), color: rand(TEXT_COLORS) }, lines: GENERIC_LINES };
+        contacts.push(c); save(); closeModal(); renderContacts();
+        toast(null, `Invitation sent to ${name}.`);
+        setTimeout(() => {
+          if (!byId(c.id)) return;
+          c.status = "online"; save(); renderContacts(); sfx.signin();
+          toast(c, "accepted your invitation and is now online.");
+        }, 5000);
+      };
+      m.querySelector("#acAdd").addEventListener("click", go);
+      m.querySelector("#acName").addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+    });
+  }
+
+  function inviteModal() {
+    const cv = convos[active];
+    const choices = contacts.filter(c => !isOff(c) && !cv.members.includes(c.id));
+    openModal(`<h2>Invite someone to this conversation</h2>
+      ${choices.length ? `<div class="pick-list">${choices.map(c => `<button data-invite="${c.id}">${contactDp(c, "sm")}<span><b>${esc(c.name)}</b><br><small style="color:var(--muted)">${STATUS[c.status]}</small></span></button>`).join("")}</div>`
+        : `<p style="margin:0;color:var(--muted)">No other contact is online right now.</p>`}
+      <div class="row"><button class="btn ghost" data-close-modal>Close</button></div>`, m => {
+      m.querySelector(".pick-list") && m.querySelector(".pick-list").addEventListener("click", e => {
+        const b = e.target.closest("[data-invite]"); if (!b) return;
+        const c = byId(b.dataset.invite);
+        closeModal();
+        let target = cv;
+        if (cv.members.length === 1) {
+          const id = "grp-" + Date.now();
+          convos[id] = { id, members: [...cv.members, c.id], msgs: [], scene: cv.scene, unread: 0 };
+          target = convos[id];
+          push(id, { kind: "sys", text: `${byId(cv.members[0]).name} is in this conversation.`, t: Date.now() });
+        } else cv.members.push(c.id);
+        push(target.id, { kind: "sys", text: `${c.name} has joined the conversation.`, t: Date.now() });
+        openChat(target.id);
+        setTimeout(() => incoming(target.id, { kind: "text", from: c.id, text: rand(["Hey everyone! 👋", "Hiii, what are we talking about?", "Oh a group chat :D"]), font: c.font, t: Date.now() }), 2200);
+      });
+    });
+  }
+
+  function sceneModal() {
+    const cv = convos[active];
+    openModal(`<h2>Conversation background</h2>
+      <div class="scene-grid">${Object.entries(SCENES).map(([k, s]) => `<button data-scene="${k}" aria-pressed="${cv.scene === k}" style="background:${s.css === "none" ? "var(--panel)" : s.css}">${s.name}</button>`).join("")}</div>
+      <div class="row"><button class="btn ghost" data-close-modal>Done</button></div>`, m => {
+      m.querySelector(".scene-grid").addEventListener("click", e => {
+        const b = e.target.closest("[data-scene]"); if (!b) return;
+        cv.scene = b.dataset.scene; save(); renderHeader();
+        m.querySelectorAll("[data-scene]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+      });
+    });
+  }
+
+  function inkModal() {
+    if (!canSend()) return;
+    const inks = ["#16212c", "#d64545", "#2e9e5b", "#3d7fd6", "#8a5cd6", "#e07b26"];
+    openModal(`<h2>Handwriting</h2>
+      <div class="ink-wrap"><canvas id="inkCanvas" aria-label="Drawing area"></canvas></div>
+      <div class="chips" id="inkColors">${inks.map((c, i) => `<button type="button" class="swatch" data-ink="${c}" aria-pressed="${i === 0}" aria-label="Ink ${c}" style="background:${c}"></button>`).join("")}
+        <button type="button" class="chip" data-size="3" aria-pressed="true">Thin</button><button type="button" class="chip" data-size="7" aria-pressed="false">Thick</button>
+        <button type="button" class="chip" id="inkClear">Clear</button></div>
+      <div class="row"><button class="btn ghost" data-close-modal>Cancel</button><button class="btn" id="inkSend">Send drawing</button></div>`, m => {
+      const cvs = m.querySelector("#inkCanvas");
+      const r = cvs.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+      cvs.width = Math.round(r.width * dpr); cvs.height = Math.round(240 * dpr);
+      const g = cvs.getContext("2d");
+      g.scale(dpr, dpr); g.lineCap = "round"; g.lineJoin = "round";
+      const clear = () => { g.fillStyle = "#ffffff"; g.fillRect(0, 0, r.width, 240); drawn = false; };
+      let color = inks[0], size = 3, drawing = false, drawn = false;
+      clear();
+      const pos = e => { const b = cvs.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+      cvs.addEventListener("pointerdown", e => { drawing = true; drawn = true; cvs.setPointerCapture(e.pointerId); const [x, y] = pos(e); g.beginPath(); g.moveTo(x, y); g.lineTo(x + .01, y); g.strokeStyle = color; g.lineWidth = size; g.stroke(); });
+      cvs.addEventListener("pointermove", e => { if (!drawing) return; const [x, y] = pos(e); g.lineTo(x, y); g.stroke(); });
+      const end = () => { drawing = false; };
+      cvs.addEventListener("pointerup", end); cvs.addEventListener("pointercancel", end);
+      m.querySelector("#inkColors").addEventListener("click", e => {
+        const b = e.target.closest("button"); if (!b) return;
+        if (b.dataset.ink) { color = b.dataset.ink; m.querySelectorAll("[data-ink]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); }
+        if (b.dataset.size) { size = +b.dataset.size; m.querySelectorAll("[data-size]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); }
+        if (b.id === "inkClear") clear();
+      });
+      m.querySelector("#inkSend").addEventListener("click", () => {
+        if (!drawn) { closeModal(); return; }
+        let url = null; try { url = cvs.toDataURL("image/png"); } catch {}
+        closeModal();
+        push(active, { kind: "ink", from: "me", img: url, t: Date.now() });
+        renderMessages(); scheduleReply(active, "ink");
+      });
+    });
+  }
+
+  /* Tic-tac-toe against the contact */
+  function gameModal(cid = active) {
+    if (cid !== active) openChat(cid);
+    const cv = convos[active];
+    const opp = responders(cv)[0];
+    if (!opp) { toast(null, "Your contact needs to be online to play."); return; }
+    const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    const b = Array(9).fill("");
+    let over = false, myTurn = true;
+    const winner = () => { for (const l of LINES) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]]; return b.every(Boolean) ? "draw" : null; };
+    const aiMove = () => {
+      const find = p => { for (const l of LINES) { const v = l.map(i => b[i]); if (v.filter(x => x === p).length === 2 && v.includes("")) return l[v.indexOf("")]; } return -1; };
+      let m = find("O"); if (m < 0) m = find("X");
+      if (m < 0 && !b[4] && Math.random() < .8) m = 4;
+      if (m < 0) m = rand(b.map((v, i) => v ? -1 : i).filter(i => i >= 0));
+      return m;
+    };
+    push(active, { kind: "sys", text: `You invited ${opp.name} to play tic-tac-toe. ${opp.name} accepted.`, t: Date.now() });
+    renderMessages();
+    openModal(`<h2>Tic-tac-toe with ${esc(opp.name)}</h2>
+      <div class="ttt-status" id="tttStatus">Your turn: you are X</div>
+      <div class="ttt" id="ttt">${b.map((_, i) => `<button type="button" data-cell="${i}" aria-label="Cell ${i + 1}"></button>`).join("")}</div>
+      <div class="row"><button class="btn ghost" id="tttAgain">New game</button><button class="btn" data-close-modal>Close</button></div>`, m => {
+      const draw = () => m.querySelectorAll("[data-cell]").forEach((el, i) => { el.textContent = b[i]; el.className = b[i] === "X" ? "x" : b[i] === "O" ? "o" : ""; });
+      const finish = w => {
+        over = true;
+        const msg = w === "draw" ? "It's a draw!" : w === "X" ? "You win! 🎉" : `${opp.name} wins!`;
+        m.querySelector("#tttStatus").textContent = msg;
+        push(active, { kind: "sys", text: `Tic-tac-toe: ${w === "draw" ? "draw" : w === "X" ? me.name + " won" : opp.name + " won"}.`, t: Date.now() });
+        renderMessages();
+        scheduleReply(active, "game", w === "X" ? rand(["Noooo, rematch!", "You got lucky 😤", "GG"]) : w === "O" ? rand(["Too easy 😎", "Haha I win!", "GG, again?"]) : rand(["Draw, again!", "Hmm, tie"]));
+      };
+      m.querySelector("#ttt").addEventListener("click", e => {
+        const c = e.target.closest("[data-cell]"); if (!c || over || !myTurn || b[+c.dataset.cell]) return;
+        b[+c.dataset.cell] = "X"; draw();
+        let w = winner(); if (w) return finish(w);
+        myTurn = false; m.querySelector("#tttStatus").textContent = `${opp.name} is thinking…`;
+        setTimeout(() => {
+          if (over) return;
+          b[aiMove()] = "O"; draw(); myTurn = true;
+          w = winner(); if (w) return finish(w);
+          m.querySelector("#tttStatus").textContent = "Your turn: you are X";
+        }, 700);
+      });
+      m.querySelector("#tttAgain").addEventListener("click", () => { b.fill(""); over = false; myTurn = true; draw(); m.querySelector("#tttStatus").textContent = "Your turn: you are X"; });
+    });
+  }
+
+  /* =============== Contact menu =============== */
+  let menuFor = null;
+  function openMenu(id, anchor) {
+    const c = byId(id); menuFor = id;
+    const menu = $("menu");
+    menu.innerHTML = `
+      <button role="menuitem" data-act="chat">💬 Send an instant message</button>
+      <button role="menuitem" data-act="wizz" ${c.blocked ? "disabled" : ""}>📳 Send a Wizz</button>
+      <button role="menuitem" data-act="game" ${isOff(c) ? "disabled" : ""}>#️⃣ Play tic-tac-toe</button>
+      <div class="sep"></div>
+      <div class="label">Move to group</div>
+      ${GROUPS.filter(g => g !== c.group).map(g => `<button role="menuitem" data-act="move" data-group="${g}">↳ ${g}</button>`).join("")}
+      <div class="sep"></div>
+      <button role="menuitem" data-act="block">${c.blocked ? "✅ Unblock contact" : "⛔ Block contact"}</button>
+      <button role="menuitem" data-act="delete" class="danger">🗑️ Delete contact</button>`;
+    menu.hidden = false;
+    const r = anchor.getBoundingClientRect(), mw = menu.offsetWidth, mh = menu.offsetHeight;
+    menu.style.left = Math.max(8, Math.min(r.right - mw, window.innerWidth - mw - 8)) + "px";
+    menu.style.top = (r.bottom + mh + 8 > window.innerHeight ? Math.max(8, r.top - mh - 4) : r.bottom + 4) + "px";
+    menu.querySelector("button:not([disabled])").focus();
+  }
+  function closeMenu() { $("menu").hidden = true; menuFor = null; }
+  $("menu").addEventListener("click", e => {
+    const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+    const c = byId(menuFor); const act = b.dataset.act;
+    if (act === "delete" && !b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Click again to delete " + c.name; return; }
+    closeMenu();
+    if (act === "chat") openChat(c.id);
+    else if (act === "wizz") sendWizz(c.id);
+    else if (act === "game") gameModal(c.id);
+    else if (act === "move") { c.group = b.dataset.group; save(); renderContacts(); toast(null, `${c.name} moved to ${c.group}.`); }
+    else if (act === "block") {
+      c.blocked = !c.blocked; save(); renderContacts(); if (active) renderConvo();
+      toast(null, c.blocked ? `${c.name} is blocked. They now see you as offline.` : `${c.name} is unblocked.`);
+    } else if (act === "delete") {
+      contacts = contacts.filter(x => x.id !== c.id);
+      for (const [id, cv] of Object.entries(convos)) if (cv.members.includes(c.id) && cv.members.length === 1) { delete convos[id]; if (openTabs.includes(id)) closeChat(id); }
+      for (const cv of Object.values(convos)) cv.members = cv.members.filter(x => x !== c.id);
+      save(); renderContacts(); if (active) renderConvo();
+      toast(null, `${c.name} was deleted from your contacts.`);
+    }
+  });
+
+  /* =============== Simulated presence =============== */
   let presenceTimer = null;
   function startPresence() {
     clearInterval(presenceTimer);
     presenceTimer = setInterval(() => {
-      const c = rand(contacts);
+      const pool = contacts.filter(c => !c.blocked);
+      if (!pool.length) return;
+      const c = rand(pool);
       const before = c.status;
-      const options = ["online", "online", "away", "busy", "offline"].filter(s => s !== before);
-      c.status = rand(options);
-      if (before === "offline" && c.status !== "offline") {
+      c.status = rand(["online", "online", "online", "away", "busy", "brb", "phone", "lunch", "offline"].filter(s => s !== before));
+      if (before === "offline" && c.status !== "offline" && me.status !== "offline") {
         sfx.signin();
         toast(c, "has just signed in.");
-        // Sometimes a contact who signs in says hi first.
-        if (Math.random() < 0.35) setTimeout(() => incoming(c.id, { from: c.id, text: rand([`Hey ${me.name}!`, "Anyone here?", "Hiii 👋"]), t: Date.now() }), 4000);
+        const cv = convos[c.id];
+        if (cv && cv.pendingOffline) {
+          cv.pendingOffline = false;
+          setTimeout(() => incoming(c.id, { kind: "text", from: c.id, text: "Sorry, I was offline! Just got your messages", font: c.font, t: Date.now() }), 3500);
+        } else if (Math.random() < 0.3) {
+          setTimeout(() => incoming(c.id, { kind: "text", from: c.id, text: rand([`Hey ${me.name}!`, "Anyone here?", "Hiii 👋"]), font: c.font, t: Date.now() }), 4000);
+        }
       }
-      save(); renderContacts(); renderTabs(); renderHeader();
-      if (active === c.id) renderMessages();
-    }, 25000);
+      // Occasionally a contact sends a Wizz out of nowhere.
+      if (Math.random() < 0.07 && !isOff(c) && me.status === "online") setTimeout(() => incoming(c.id, { kind: "wizz", from: c.id, t: Date.now() }), 2000);
+      save(); renderContacts();
+      if (active) { renderTabs(); renderHeader(); }
+    }, 20000);
   }
 
-  /* ---------------- Sign-in / out ---------------- */
+  /* =============== Sign-in / out =============== */
+  fillStatusSelect($("statusInput"), true);
+  fillStatusSelect($("meStatus"), true);
   function enterApp() {
-    $("signin").hidden = true;
-    $("app").hidden = false;
-    renderAll();
-    startPresence();
-    sfx.signin();
+    $("signin").hidden = true; $("app").hidden = false;
+    renderAll(); startPresence(); sfx.signin();
     setTimeout(() => {
       const y = byId("yasmine");
-      if (!(convos.yasmine || []).length && y.status !== "offline")
-        incoming("yasmine", { from: "yasmine", text: `Hey ${me.name}! You're online 😄`, t: Date.now() });
+      if (y && !isOff(y) && me.status !== "offline" && !(convos.yasmine && convos.yasmine.msgs.length))
+        incoming("yasmine", { kind: "text", from: "yasmine", text: `Hey ${me.name}! You're online :D`, font: y.font, t: Date.now() });
     }, 2500);
   }
-
-  $("nameInput").value = (me && me.name) || "";
-  if (me) $("statusInput").value = me.status;
+  if (me) { $("nameInput").value = me.name; $("statusInput").value = me.status === "offline" ? "online" : me.status; }
   $("signinForm").addEventListener("submit", e => {
     e.preventDefault();
     const name = $("nameInput").value.trim();
     if (!name) { $("nameInput").focus(); $("nameInput").placeholder = "Enter a display name to sign in"; return; }
-    me = { name, status: $("statusInput").value, pm: (me && me.pm) || "" };
+    me = { pic: { preset: "turtle" }, font: { family: "body", color: "" }, music: { on: false, song: "" }, pm: "", ...(me || {}), name, status: $("statusInput").value };
     save(); enterApp();
   });
   $("signoutBtn").addEventListener("click", () => {
     clearInterval(presenceTimer);
-    openTabs = []; active = null;
+    openTabs = []; active = null; closePop(); closeMenu();
     $("app").hidden = true; $("app").classList.remove("chatting");
     $("signin").hidden = false;
   });
 
-  /* ---------------- Events ---------------- */
-  $("meName").addEventListener("change", e => { me.name = e.target.value.trim() || me.name; save(); renderMe(); renderMessages(); });
-  $("meStatus").addEventListener("change", e => { me.status = e.target.value; save(); renderMe(); });
+  /* =============== Events =============== */
+  $("meName").addEventListener("change", e => { me.name = e.target.value.trim() || me.name; save(); renderMe(); if (active) renderConvo(); });
+  $("meStatus").addEventListener("change", e => { me.status = e.target.value; save(); renderMe(); if (active) renderHeader(); });
   $("mePm").addEventListener("change", e => { me.pm = e.target.value.trim(); save(); });
+  $("musicOn").addEventListener("change", e => { me.music = me.music || {}; me.music.on = e.target.checked; save(); renderMe(); if (e.target.checked) $("musicSong").focus(); });
+  $("musicSong").addEventListener("change", e => { me.music.song = e.target.value.trim(); save(); });
   $("soundBtn").addEventListener("click", () => { sound = !sound; save(); renderMe(); });
+  $("meDpBtn").addEventListener("click", dpModal);
+  $("addBtn").addEventListener("click", addContactModal);
   $("search").addEventListener("input", renderContacts);
+  document.querySelectorAll("[data-sort]").forEach(b => b.addEventListener("click", () => { sort = b.dataset.sort; save(); renderMe(); renderContacts(); }));
 
   $("contacts").addEventListener("click", e => {
     const g = e.target.closest("[data-group]");
     if (g) { collapsed[g.dataset.group] = !collapsed[g.dataset.group]; renderContacts(); return; }
-    const b = e.target.closest(".contact");
-    if (b) openChat(b.dataset.id);
+    const mb = e.target.closest("[data-menu]");
+    if (mb) { e.stopPropagation(); menuFor === mb.dataset.menu ? closeMenu() : openMenu(mb.dataset.menu, mb); return; }
+    const row = e.target.closest(".contact");
+    if (row) openChat(row.dataset.id);
+  });
+  $("contacts").addEventListener("keydown", e => {
+    const row = e.target.closest(".contact");
+    if (row && e.target === row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openChat(row.dataset.id); }
   });
 
   $("tabs").addEventListener("click", e => {
@@ -740,46 +1357,43 @@ button { cursor: pointer; }
   });
   $("tabs").addEventListener("keydown", e => {
     const t = e.target.closest("[data-tab]");
-    if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openChat(t.dataset.tab); }
+    if (t && e.target === t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openChat(t.dataset.tab); }
   });
-  $("backBtn").addEventListener("click", () => { $("app").classList.remove("chatting"); });
+  $("backBtn").addEventListener("click", () => { $("app").classList.remove("chatting"); closePop(); });
+  $("inviteBtn").addEventListener("click", inviteModal);
+  $("gameBtn").addEventListener("click", () => gameModal());
+  $("sceneBtn").addEventListener("click", sceneModal);
+  $("side").addEventListener("click", e => { if (e.target.closest("#sideMe")) dpModal(); });
+  $("messages").addEventListener("click", e => { const r = e.target.closest("[data-replay]"); if (r) playWink(r.dataset.replay); });
 
   $("sendForm").addEventListener("submit", e => {
     e.preventDefault();
-    send($("input").value);
+    sendText($("input").value);
     $("input").value = ""; $("input").style.height = "";
   });
   $("input").addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("sendForm").requestSubmit(); }
   });
   $("input").addEventListener("input", e => {
-    const ta = e.target; ta.style.height = "46px"; ta.style.height = Math.min(ta.scrollHeight + 2, 140) + "px";
+    const ta = e.target; ta.style.height = "48px"; ta.style.height = Math.min(ta.scrollHeight + 2, 140) + "px";
   });
+  document.querySelectorAll("[data-pop]").forEach(b => b.addEventListener("click", () => openPop(b.dataset.pop)));
+  $("wizzBtn").addEventListener("click", () => sendWizz());
+  $("fileBtn").addEventListener("click", () => { if (canSend()) $("fileInput").click(); });
+  $("fileInput").addEventListener("change", e => { sendFile(e.target.files[0]); e.target.value = ""; });
+  $("inkBtn").addEventListener("click", inkModal);
 
-  $("picker").innerHTML = PICKER.map(em => `<button type="button" data-emo="${em}" aria-label="Insert ${em}">${em}</button>`).join("") +
-    `<div class="hint">Shortcuts: :) :D ;) :P :( (y) &lt;3 (coffee)</div>`;
-  $("emojiBtn").addEventListener("click", () => {
-    const p = $("picker"); p.hidden = !p.hidden; $("emojiBtn").setAttribute("aria-expanded", String(!p.hidden));
-  });
-  $("picker").addEventListener("click", e => {
-    const b = e.target.closest("[data-emo]"); if (!b) return;
-    const ta = $("input"), s = ta.selectionStart ?? ta.value.length;
-    ta.value = ta.value.slice(0, s) + b.dataset.emo + ta.value.slice(ta.selectionEnd ?? s);
-    ta.focus(); ta.selectionStart = ta.selectionEnd = s + b.dataset.emo.length;
-  });
   document.addEventListener("click", e => {
-    if (!e.target.closest("#picker") && !e.target.closest("#emojiBtn")) { $("picker").hidden = true; $("emojiBtn").setAttribute("aria-expanded", "false"); }
+    if (pop && !e.target.closest("#pop") && !e.target.closest("[data-pop]")) closePop();
+    if (menuFor && !e.target.closest("#menu") && !e.target.closest("[data-menu]")) closeMenu();
   });
-  $("nudgeBtn").addEventListener("click", nudge);
-  $("clearBtn").addEventListener("click", () => {
-    if (!active) return;
-    const btn = $("clearBtn");
-    if (btn.dataset.confirm) { delete convos[active]; save(); renderMessages(); btn.dataset.confirm = ""; delete btn.dataset.confirm; btn.lastChild.textContent = "Clear history"; return; }
-    btn.dataset.confirm = "1"; btn.lastChild.textContent = "Click again to clear";
-    setTimeout(() => { if (btn.dataset.confirm) { delete btn.dataset.confirm; btn.lastChild.textContent = "Clear history"; } }, 3000);
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (!$("modalBack").hidden) closeModal(); else if (menuFor) closeMenu(); else if (pop) closePop();
   });
-
-  if (me) { $("nameInput").value = me.name; }
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && active && convos[active]) { convos[active].unread = 0; renderContacts(); renderTabs(); }
+  });
 })();
 </script>
 </body>
