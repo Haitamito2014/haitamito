@@ -67,7 +67,60 @@
       <button class="btn" type="submit" id="upBtn">Create my account</button>
     </form>
 
-    <p class="demo-note">Your contacts find you by your e-mail address, and people in your contact list can see it. Want to look around first? Try the <a href="demo.html">offline demo</a>.</p>
+    <form id="formCode" class="signin-card" style="border:0;box-shadow:none;padding:0;gap:14px" novalidate hidden>
+      <div>
+        <h1>Enter your security code</h1>
+        <p>Open your authenticator app and type the 6-digit code shown for <b>NSM Messenger</b>.</p>
+      </div>
+      <div class="field"><label for="codeIn">6-digit code</label><input id="codeIn" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="123456"></div>
+      <p class="form-msg" id="codeMsg" hidden></p>
+      <button class="btn" type="submit" id="codeBtn">Verify and sign in</button>
+      <button class="linkbtn" type="button" id="codeCancel">Cancel</button>
+    </form>
+
+    <p class="demo-note" id="authNote">Your contacts find you by your e-mail address, and people in your contact list can see it. Want to look around first? Try the <a href="demo.html">offline demo</a>.</p>
+  </div>
+</section>
+
+<!-- ============ Step 1 after sign-up: confirm e-mail ============ -->
+<section class="signin" id="verify" hidden>
+  <div class="signin-card">
+    <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b><small>Messenger</small></div></div>
+    <div class="steps" aria-label="Account setup steps"><span class="on">1 · Confirm e-mail</span><span>2 · Security code</span></div>
+    <div>
+      <h1>Confirm your e-mail address</h1>
+      <p>We sent a confirmation link to <b id="verifyEmail"></b>. Open it, then come back here. Check your spam folder if you don't see it.</p>
+    </div>
+    <p class="form-msg" id="verifyMsg" hidden></p>
+    <button class="btn" type="button" id="verifyDone">I've confirmed my e-mail</button>
+    <button class="btn ghost" type="button" id="verifyResend">Send the e-mail again</button>
+    <button class="linkbtn" type="button" id="verifyOut">Use another account</button>
+  </div>
+</section>
+
+<!-- ============ Step 2: set up the authenticator app ============ -->
+<section class="signin" id="enroll" hidden>
+  <div class="signin-card">
+    <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b><small>Messenger</small></div></div>
+    <div class="steps" aria-label="Account setup steps"><span class="done">1 · Confirm e-mail ✓</span><span class="on">2 · Security code</span></div>
+    <div>
+      <h1>Protect your account</h1>
+      <p>NSM asks for a code from an authenticator app each time you sign in on a new device. Install one if you don't have it, for example Google Authenticator or Microsoft Authenticator.</p>
+    </div>
+    <ol class="enroll-steps">
+      <li>In the app, add an account and <b>scan this QR code</b>:
+        <div class="qr" id="qr" aria-label="QR code for your authenticator app"></div>
+        <div class="mail">On this phone? <a id="otpLink" href="#">Open it in your authenticator app</a>, or type this key:</div>
+        <div class="secret"><code id="secretKey">…</code><button class="btn ghost" type="button" id="copyKey">Copy</button></div>
+      </li>
+      <li>Type the 6-digit code the app shows:
+        <input id="enrollCode" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" aria-label="6-digit code from your authenticator app">
+      </li>
+    </ol>
+    <p class="form-msg" id="enrollMsg" hidden></p>
+    <button class="btn" type="button" id="enrollBtn" disabled>Turn on security codes</button>
+    <p class="demo-note">Keep the key above somewhere safe. If you lose your phone, it lets you set up your codes again on a new one.</p>
+    <button class="linkbtn" type="button" id="enrollOut">Sign out</button>
   </div>
 </section>
 
@@ -171,6 +224,7 @@
 <div class="menu" id="menu" hidden role="menu"></div>
 <div class="modal-back" id="modalBack" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
 
+<script src="vendor/qrcode.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>

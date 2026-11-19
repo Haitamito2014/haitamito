@@ -324,3 +324,16 @@ svg.i { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-widt
 .setup code { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; font-size: 13px; }
 .loading { height: 100%; display: grid; place-items: center; color: var(--muted); }
 .mail { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.steps { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12.5px; font-weight: 600; }
+.steps span { padding: 4px 10px; border-radius: 999px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
+.steps span.on { background: var(--accent-soft); color: var(--fg); border-color: var(--accent); }
+.steps span.done { color: var(--online); }
+.code-input { font-size: 24px !important; letter-spacing: .35em; text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-display); border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 10px 12px; width: 100%; }
+.enroll-steps { margin: 0; padding-left: 20px; display: grid; gap: 14px; }
+.enroll-steps li { display: block; }
+.enroll-steps li > * { margin-top: 8px; }
+.qr { margin-left: auto; margin-right: auto; background: #ffffff; padding: 10px; border-radius: 10px; border: 1px solid var(--line); width: 200px; height: 200px; display: grid; place-items: center; }
+.qr img, .qr canvas, .qr svg { display: block; width: 180px !important; height: 180px !important; }
+.secret { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.secret code { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 14px; letter-spacing: .08em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.secret .btn { padding: 6px 12px; }

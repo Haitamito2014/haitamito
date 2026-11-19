@@ -6,7 +6,7 @@ const params = new URLSearchParams(location.search);
 const useEmulator = params.has("emulator"); // local testing only: ?emulator
 
 const $ = id => document.getElementById(id);
-const show = id => { for (const s of ["loading", "setup", "auth", "app"]) $(s).hidden = s !== id; };
+const show = id => { for (const s of ["loading", "setup", "auth", "verify", "enroll", "app"]) $(s).hidden = s !== id; };
 
 if (!firebaseConfig && !useEmulator) {
   show("setup");
@@ -16,7 +16,8 @@ if (!firebaseConfig && !useEmulator) {
 const { initializeApp } = await import(SDK + "firebase-app.js");
 const {
   getAuth, connectAuthEmulator, onAuthStateChanged, createUserWithEmailAndPassword,
-  signInWithEmailAndPassword, sendPasswordResetEmail, signOut, updateProfile
+  signInWithEmailAndPassword, sendPasswordResetEmail, signOut, updateProfile, sendEmailVerification,
+  multiFactor, getMultiFactorResolver, TotpMultiFactorGenerator
 } = await import(SDK + "firebase-auth.js");
 const {
   getFirestore, connectFirestoreEmulator, doc, collection, getDoc, setDoc, updateDoc, deleteDoc, addDoc,
@@ -26,6 +27,8 @@ const {
 const fbApp = initializeApp(useEmulator ? { apiKey: "demo-key", authDomain: "demo-nsm.firebaseapp.com", projectId: "demo-nsm" } : firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
+// Local testing only: "?emulator&skip2fa" skips the authenticator step, because the Firebase emulator can't do authenticator codes.
+const skip2fa = useEmulator && params.has("skip2fa");
 if (useEmulator) {
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
@@ -108,6 +111,7 @@ let heartbeat = null, ticker = null, slowTicker = null;
 let pop = null, menuFor = null, gameOpenFor = null;
 let pendingSignup = null;    // { name } while creating an account
 let pendingStatus = null;
+let resolver = null;       // waiting for the authenticator code at sign-in
 let typingSent = 0;
 const collapsed = {};
 const local = (k, v) => { try { if (v === undefined) return localStorage.getItem("nsm-" + k); localStorage.setItem("nsm-" + k, v); } catch { return null; } };
@@ -191,7 +195,13 @@ function friendlyError(e) {
     "auth/user-not-found": "No account uses this e-mail. Create one instead.",
     "auth/too-many-requests": "Too many attempts. Wait a few minutes and try again.",
     "auth/network-request-failed": "Can't reach the server. Check your internet connection.",
-    "auth/operation-not-allowed": "E-mail sign-in isn't turned on yet. The site owner must enable it in Firebase.",
+    "auth/operation-not-allowed": "This sign-in method isn't turned on yet. The site owner must enable it in Firebase.",
+    "auth/invalid-verification-code": "That code isn't right. Check the code in your authenticator app and try again.",
+    "auth/missing-code": "Type the 6-digit code from your authenticator app.",
+    "auth/totp-challenge-timeout": "This setup expired. Reload the page and scan the new QR code.",
+    "auth/requires-recent-login": "For your security, sign in again to finish this step.",
+    "auth/unverified-email": "Confirm your e-mail address first.",
+    "auth/user-token-expired": "Your session expired. Sign in again.",
     "permission-denied": "You're not allowed to do that.",
     "unavailable": "Can't reach the server. Check your internet connection."
   };
@@ -244,8 +254,40 @@ $("formIn").addEventListener("submit", async e => {
   formMsg("inMsg", ""); $("inBtn").disabled = true;
   pendingStatus = $("inStatus").value;
   try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch (err) { formMsg("inMsg", friendlyError(err)); pendingStatus = null; }
+  catch (err) {
+    if (err.code === "auth/multi-factor-auth-required") askForCode(getMultiFactorResolver(auth, err));
+    else { formMsg("inMsg", friendlyError(err)); pendingStatus = null; }
+  }
   finally { $("inBtn").disabled = false; }
+});
+
+// Second step of signing in: the code from the authenticator app.
+function askForCode(r) {
+  resolver = r;
+  $("formIn").hidden = true; $("formUp").hidden = true; $("formCode").hidden = false;
+  document.querySelector("#auth .auth-tabs").hidden = true; $("authNote").hidden = true;
+  formMsg("codeMsg", ""); $("codeIn").value = ""; $("codeIn").focus();
+}
+function cancelCode() {
+  resolver = null; pendingStatus = null;
+  $("formCode").hidden = true; document.querySelector("#auth .auth-tabs").hidden = false; $("authNote").hidden = false;
+  setTab(false);
+}
+$("codeCancel").addEventListener("click", cancelCode);
+$("codeIn").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); if (e.target.value.length === 6) $("formCode").requestSubmit(); });
+$("formCode").addEventListener("submit", async e => {
+  e.preventDefault();
+  const code = $("codeIn").value.trim();
+  if (!/^\d{6}$/.test(code)) return formMsg("codeMsg", "Type the 6-digit code from your authenticator app.");
+  const hint = resolver && resolver.hints.find(h => h.factorId === TotpMultiFactorGenerator.FACTOR_ID);
+  if (!hint) return formMsg("codeMsg", "This account uses a kind of security code NSM doesn't support. Contact the site owner.");
+  $("codeBtn").disabled = true; formMsg("codeMsg", "");
+  try {
+    await resolver.resolveSignIn(TotpMultiFactorGenerator.assertionForSignIn(hint.uid, code));
+    resolver = null;
+    $("formCode").hidden = true; document.querySelector("#auth .auth-tabs").hidden = false; $("authNote").hidden = false; setTab(false);
+  } catch (err) { formMsg("codeMsg", friendlyError(err)); $("codeIn").select(); }
+  finally { $("codeBtn").disabled = false; }
 });
 $("formUp").addEventListener("submit", async e => {
   e.preventDefault();
@@ -258,6 +300,9 @@ $("formUp").addEventListener("submit", async e => {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(cred.user, { displayName: name }).catch(() => {});
+    await sendEmailVerification(cred.user, { url: location.origin + location.pathname }).catch(() => {});
+    lastVerifyMail = Date.now();
+    gate(cred.user);
   } catch (err) { formMsg("upMsg", friendlyError(err)); pendingSignup = null; }
   finally { $("upBtn").disabled = false; }
 });
@@ -268,30 +313,142 @@ $("forgotBtn").addEventListener("click", async () => {
   catch (err) { formMsg("inMsg", friendlyError(err)); }
 });
 
-onAuthStateChanged(auth, async user => {
-  if (!user) { stopSession(); show("auth"); return; }
-  uid = user.uid;
-  try {
-    const ref = doc(db, "users", uid);
-    const snap = await getDoc(ref);
-    const email = (user.email || "").toLowerCase();
-    if (!snap.exists()) {
-      const name = (pendingSignup && pendingSignup.name) || user.displayName || email.split("@")[0];
-      await setDoc(ref, {
-        name, email, status: "online", pm: "", music: { on: false, song: "" },
-        pic: { preset: rand(Object.keys(PICS)) }, font: { family: "body", color: "", bold: false, italic: false },
-        lastSeen: Date.now(), created: Date.now()
-      });
-    } else {
-      await updateDoc(ref, { lastSeen: Date.now(), ...(pendingStatus ? { status: pendingStatus } : {}) });
+/* =============== Gate: e-mail confirmed + authenticator code, then the app =============== */
+let lastVerifyMail = 0, verifyPoll = null, gating = false;
+onAuthStateChanged(auth, user => gate(user));
+
+async function gate(user) {
+  clearInterval(verifyPoll);
+  if (!user) {
+    stopSession(); show("auth");
+    if (!resolver) { // back to the sign-in form, unless we're waiting for a security code
+      $("formCode").hidden = true; document.querySelector("#auth .auth-tabs").hidden = false; $("authNote").hidden = false;
+      $("tabIn").setAttribute("aria-selected", "true"); $("tabUp").setAttribute("aria-selected", "false");
+      $("formIn").hidden = false; $("formUp").hidden = true;
     }
-    pendingSignup = null; pendingStatus = null;
-    startSession();
+    return;
+  }
+  if (gating) return;
+  gating = true;
+  try {
+    // Step 1: e-mail address must be confirmed.
+    if (!user.emailVerified) { showVerify(user); return; }
+    // Step 2: an authenticator app must be set up...
+    if (!skip2fa && multiFactor(user).enrolledFactors.length === 0) { showEnroll(user); return; }
+    // ...and this session must have been opened with a code from it.
+    const tok = await user.getIdTokenResult();
+    if (!skip2fa && !(tok.claims.firebase && tok.claims.firebase.sign_in_second_factor)) {
+      await signOut(auth);
+      show("auth"); setTab(false);
+      $("inEmail").value = user.email || "";
+      formMsg("inMsg", "Security codes are on. Sign in again: after your password, NSM will ask for the code from your authenticator app.", true);
+      return;
+    }
+    if (uid !== user.uid || $("app").hidden) await enterApp(user);
   } catch (err) {
     show("auth"); setTab(false);
-    formMsg("inMsg", "Signed in, but your profile couldn't be loaded: " + friendlyError(err));
-  }
+    formMsg("inMsg", friendlyError(err));
+  } finally { gating = false; }
+}
+
+function showVerify(user) {
+  show("verify");
+  $("verifyEmail").textContent = user.email;
+  formMsg("verifyMsg", "");
+  // Check every 5 seconds whether the link was opened (in any tab or device).
+  verifyPoll = setInterval(async () => {
+    try { await user.reload(); if (user.emailVerified) { clearInterval(verifyPoll); await user.getIdToken(true); gate(user); } } catch {}
+  }, 5000);
+}
+$("verifyDone").addEventListener("click", async () => {
+  const user = auth.currentUser; if (!user) return;
+  try {
+    await user.reload();
+    if (!user.emailVerified) return formMsg("verifyMsg", "Your e-mail isn't confirmed yet. Open the link in the e-mail we sent, then try again.");
+    await user.getIdToken(true);
+    gate(user);
+  } catch (err) { formMsg("verifyMsg", friendlyError(err)); }
 });
+$("verifyResend").addEventListener("click", async () => {
+  const user = auth.currentUser; if (!user) return;
+  const wait = 60 - Math.round((Date.now() - lastVerifyMail) / 1000);
+  if (wait > 0) return formMsg("verifyMsg", `Wait ${wait} seconds before asking for another e-mail.`);
+  try {
+    await sendEmailVerification(user, { url: location.origin + location.pathname });
+    lastVerifyMail = Date.now();
+    formMsg("verifyMsg", `A new link is on its way to ${user.email}.`, true);
+  } catch (err) { formMsg("verifyMsg", friendlyError(err)); }
+});
+$("verifyOut").addEventListener("click", () => signOut(auth));
+
+let totpSecret = null;
+async function showEnroll(user) {
+  show("enroll");
+  formMsg("enrollMsg", ""); $("enrollCode").value = ""; $("enrollBtn").disabled = true;
+  $("qr").innerHTML = ""; $("secretKey").textContent = "…";
+  try {
+    const session = await multiFactor(user).getSession();
+    totpSecret = await TotpMultiFactorGenerator.generateSecret(session);
+    const url = totpSecret.generateQrCodeUrl(user.email, "NSM Messenger");
+    const q = qrcode(0, "M"); q.addData(url); q.make();
+    $("qr").innerHTML = q.createSvgTag(4, 0);
+    $("otpLink").href = url;
+    $("secretKey").textContent = totpSecret.secretKey.replace(/(.{4})/g, "$1 ").trim();
+    $("enrollBtn").disabled = false;
+    $("enrollCode").focus();
+  } catch (err) {
+    if (err.code === "auth/requires-recent-login") {
+      await signOut(auth); show("auth"); setTab(false);
+      $("inEmail").value = user.email || "";
+      formMsg("inMsg", "For your security, sign in again to set up your security code.", true);
+      return;
+    }
+    formMsg("enrollMsg", err.code === "auth/operation-not-allowed"
+      ? "Security codes aren't turned on for this site yet. The site owner must enable them in Firebase (see nsm/README.md)."
+      : "Couldn't prepare your security code: " + friendlyError(err));
+  }
+}
+$("copyKey").addEventListener("click", () => {
+  const key = totpSecret ? totpSecret.secretKey : "";
+  if (!key) return;
+  navigator.clipboard.writeText(key).then(() => { $("copyKey").textContent = "Copied"; setTimeout(() => $("copyKey").textContent = "Copy", 2000); })
+    .catch(() => { const r = document.createRange(); r.selectNodeContents($("secretKey")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); });
+});
+$("enrollCode").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); });
+$("enrollCode").addEventListener("keydown", e => { if (e.key === "Enter") $("enrollBtn").click(); });
+$("enrollBtn").addEventListener("click", async () => {
+  const user = auth.currentUser, code = $("enrollCode").value.trim();
+  if (!user || !totpSecret) return;
+  if (!/^\d{6}$/.test(code)) return formMsg("enrollMsg", "Type the 6-digit code your authenticator app shows for NSM Messenger.");
+  $("enrollBtn").disabled = true; formMsg("enrollMsg", "");
+  try {
+    await multiFactor(user).enroll(TotpMultiFactorGenerator.assertionForEnrollment(totpSecret, code), "Authenticator app");
+    totpSecret = null;
+    await user.getIdToken(true);
+    gate(user);
+  } catch (err) { formMsg("enrollMsg", friendlyError(err)); $("enrollBtn").disabled = false; }
+});
+$("enrollOut").addEventListener("click", () => signOut(auth));
+
+// Create the profile the first time, then open the app.
+async function enterApp(user) {
+  uid = user.uid;
+  const ref = doc(db, "users", uid);
+  const snap = await getDoc(ref);
+  const email = (user.email || "").toLowerCase();
+  if (!snap.exists()) {
+    const name = (pendingSignup && pendingSignup.name) || user.displayName || email.split("@")[0];
+    await setDoc(ref, {
+      name: name.slice(0, 32), email, status: "online", pm: "", music: { on: false, song: "" },
+      pic: { preset: rand(Object.keys(PICS)) }, font: { family: "body", color: "", bold: false, italic: false },
+      lastSeen: Date.now(), created: Date.now()
+    });
+  } else {
+    await updateDoc(ref, { lastSeen: Date.now(), ...(pendingStatus ? { status: pendingStatus } : {}) });
+  }
+  pendingSignup = null; pendingStatus = null;
+  startSession();
+}
 
 /* =============== Session: live listeners =============== */
 function startSession() {
