@@ -5,12 +5,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
 
-    // Signed in, e-mail address confirmed, and this session was opened with a code
-    // from the authenticator app (two-factor login). Anything less is refused.
+    // Signed in with a confirmed e-mail address. People who turned on security codes
+    // can't get signed in at all without their code: Firebase Authentication enforces that.
     function signedIn() {
       return request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.firebase.get('sign_in_second_factor', null) != null;
+        && request.auth.token.email_verified == true;
     }
 
     // Public profile of each person: name, status, personal message, picture.

@@ -73,8 +73,8 @@ These values aren't secret: every website using Firebase shows them. The securit
 ## How it works
 - **Accounts:** people sign up with a display name, e-mail and password (at least 6 characters). "Forgot your password?" sends a reset e-mail.
 - **E-mail confirmation:** right after signing up, Firebase sends a confirmation link. NSM waits until it's opened (it checks every 5 seconds, so the page moves on by itself).
-- **Two-factor login (required):** next, everyone sets up an authenticator app (Google Authenticator, Microsoft Authenticator…) by scanning a QR code. From then on, signing in asks for the password **and** the 6-digit code from the app. NSM keeps people signed in on their device, so in practice the code is asked on each new device, or after signing out.
-- **Enforced by the database:** the security rules refuse anyone whose e-mail isn't confirmed or whose session wasn't opened with the authenticator code. Changing the page's code doesn't get around it.
+- **Security codes (optional):** anyone can turn them on with the shield button (NSM also suggests it once, with a "Not now" option). They scan a QR code with an authenticator app (Google Authenticator, Microsoft Authenticator…). From then on, signing in asks for the password **and** the 6-digit code. NSM keeps people signed in on their device, so in practice the code is asked on each new device, or after signing out. They can turn it off again in the same place.
+- **Enforced by the servers:** the database rules refuse anyone whose e-mail isn't confirmed. For people who turned on security codes, Firebase Authentication itself refuses to sign them in without the code. Changing the page's code gets around neither.
 - **Contacts:** you add someone by their e-mail address. They get a "X added you to their contact list" notice and can add you back or ignore it.
 - **Presence:** the app records each signed-in person's activity every minute. If nothing arrives for about 2½ minutes, that person shows as offline.
 - **Privacy:** only you can see your contact list. Only the members of a conversation can read it. Profiles (name, e-mail, status, picture) are visible to any signed-in user, so people can find each other by e-mail.
@@ -90,4 +90,4 @@ People can set their codes up again on a new phone with the key shown during set
 - **No spam protection:** anyone can create an account, and nothing limits sign-ups or messages beyond Firebase's own protections. For a public launch, consider turning on Firebase App Check.
 
 ## Testing locally
-With the [Firebase emulators](https://firebase.google.com/docs/emulator-suite) running (Auth on port 9099, Firestore on 8080), serve the repository folder and open `http://127.0.0.1:8000/nsm/?emulator`. The emulator can't produce authenticator codes: add `&skip2fa` to skip that step locally, and use rules without the `sign_in_second_factor` line. These switches only work with the emulator, never on the real site.
+With the [Firebase emulators](https://firebase.google.com/docs/emulator-suite) running (Auth on port 9099, Firestore on 8080), serve the repository folder and open `http://127.0.0.1:8000/nsm/?emulator`. The emulator can't produce authenticator codes, so security codes can only be tried on the real Firebase project.

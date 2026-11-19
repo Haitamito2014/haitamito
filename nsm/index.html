@@ -86,7 +86,6 @@
 <section class="signin" id="verify" hidden>
   <div class="signin-card">
     <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b><small>Messenger</small></div></div>
-    <div class="steps" aria-label="Account setup steps"><span class="on">1 · Confirm e-mail</span><span>2 · Security code</span></div>
     <div>
       <h1>Confirm your e-mail address</h1>
       <p>We sent a confirmation link to <b id="verifyEmail"></b>. Open it, then come back here. Check your spam folder if you don't see it.</p>
@@ -102,10 +101,9 @@
 <section class="signin" id="enroll" hidden>
   <div class="signin-card">
     <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b><small>Messenger</small></div></div>
-    <div class="steps" aria-label="Account setup steps"><span class="done">1 · Confirm e-mail ✓</span><span class="on">2 · Security code</span></div>
     <div>
-      <h1>Protect your account</h1>
-      <p>NSM asks for a code from an authenticator app each time you sign in on a new device. Install one if you don't have it, for example Google Authenticator or Microsoft Authenticator.</p>
+      <h1>Turn on security codes</h1>
+      <p>Optional but recommended. Once on, NSM asks for a code from an authenticator app when you sign in on a new device, so nobody can get in with just your password. Install one if you don't have it, for example Google Authenticator or Microsoft Authenticator.</p>
     </div>
     <ol class="enroll-steps">
       <li>In the app, add an account and <b>scan this QR code</b>:
@@ -120,7 +118,7 @@
     <p class="form-msg" id="enrollMsg" hidden></p>
     <button class="btn" type="button" id="enrollBtn" disabled>Turn on security codes</button>
     <p class="demo-note">Keep the key above somewhere safe. If you lose your phone, it lets you set up your codes again on a new one.</p>
-    <button class="linkbtn" type="button" id="enrollOut">Sign out</button>
+    <button class="linkbtn" type="button" id="enrollOut">Not now, back to NSM</button>
   </div>
 </section>
 
@@ -131,6 +129,9 @@
       <div class="me-top">
         <div class="logo"><svg><use href="#nsm-logo"/></svg><div><b>NSM</b></div></div>
         <div style="display:flex; gap:6px">
+          <button class="icon-btn" id="securityBtn" aria-label="Security settings" title="Security">
+            <svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.4-7 10-4-1.6-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+          </button>
           <button class="icon-btn" id="soundBtn" aria-label="Turn sounds off" title="Sounds on">
             <svg class="i" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
           </button>

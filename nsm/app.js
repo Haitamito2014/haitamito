@@ -27,8 +27,6 @@ const {
 const fbApp = initializeApp(useEmulator ? { apiKey: "demo-key", authDomain: "demo-nsm.firebaseapp.com", projectId: "demo-nsm" } : firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
-// Local testing only: "?emulator&skip2fa" skips the authenticator step, because the Firebase emulator can't do authenticator codes.
-const skip2fa = useEmulator && params.has("skip2fa");
 if (useEmulator) {
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
@@ -313,7 +311,7 @@ $("forgotBtn").addEventListener("click", async () => {
   catch (err) { formMsg("inMsg", friendlyError(err)); }
 });
 
-/* =============== Gate: e-mail confirmed + authenticator code, then the app =============== */
+/* =============== Gate: e-mail confirmed, then the app (security codes are optional) =============== */
 let lastVerifyMail = 0, verifyPoll = null, gating = false;
 onAuthStateChanged(auth, user => gate(user));
 
@@ -333,17 +331,6 @@ async function gate(user) {
   try {
     // Step 1: e-mail address must be confirmed.
     if (!user.emailVerified) { showVerify(user); return; }
-    // Step 2: an authenticator app must be set up...
-    if (!skip2fa && multiFactor(user).enrolledFactors.length === 0) { showEnroll(user); return; }
-    // ...and this session must have been opened with a code from it.
-    const tok = await user.getIdTokenResult();
-    if (!skip2fa && !(tok.claims.firebase && tok.claims.firebase.sign_in_second_factor)) {
-      await signOut(auth);
-      show("auth"); setTab(false);
-      $("inEmail").value = user.email || "";
-      formMsg("inMsg", "Security codes are on. Sign in again: after your password, NSM will ask for the code from your authenticator app.", true);
-      return;
-    }
     if (uid !== user.uid || $("app").hidden) await enterApp(user);
   } catch (err) {
     show("auth"); setTab(false);
@@ -398,9 +385,7 @@ async function showEnroll(user) {
     $("enrollCode").focus();
   } catch (err) {
     if (err.code === "auth/requires-recent-login") {
-      await signOut(auth); show("auth"); setTab(false);
-      $("inEmail").value = user.email || "";
-      formMsg("inMsg", "For your security, sign in again to set up your security code.", true);
+      formMsg("enrollMsg", "For your security, sign out and sign in again, then turn on security codes.");
       return;
     }
     formMsg("enrollMsg", err.code === "auth/operation-not-allowed"
@@ -424,11 +409,44 @@ $("enrollBtn").addEventListener("click", async () => {
   try {
     await multiFactor(user).enroll(TotpMultiFactorGenerator.assertionForEnrollment(totpSecret, code), "Authenticator app");
     totpSecret = null;
-    await user.getIdToken(true);
-    gate(user);
+    show("app"); renderSoon();
+    toast(null, "Security codes are on. Next time you sign in on a new device, NSM will ask for the code from your app.");
   } catch (err) { formMsg("enrollMsg", friendlyError(err)); $("enrollBtn").disabled = false; }
 });
-$("enrollOut").addEventListener("click", () => signOut(auth));
+$("enrollOut").addEventListener("click", () => { totpSecret = null; show("app"); renderSoon(); });
+
+/* Security settings: turn security codes on or off */
+const hasCodes = () => !!(auth.currentUser && multiFactor(auth.currentUser).enrolledFactors.length);
+function securityModal() {
+  const user = auth.currentUser; if (!user) return;
+  const f = multiFactor(user).enrolledFactors[0];
+  openModal(`<h2>Security</h2>
+    <div class="sys" style="margin:0">${f
+      ? `🔒 Security codes are <b>on</b> (since ${esc(new Date(f.enrollmentTime).toLocaleDateString())}). Signing in on a new device asks for the code from your authenticator app.`
+      : `Security codes are <b>off</b>. Anyone who knows your password can sign in to your account.`}</div>
+    <p class="form-msg" id="secMsg" hidden></p>
+    <div class="row">
+      <button class="btn ghost" data-close-modal>Close</button>
+      ${f ? `<button class="btn ghost" id="secOff" style="color:var(--busy)">Turn off security codes</button>` : `<button class="btn" id="secOn">Turn on security codes</button>`}
+    </div>`, m => {
+    const on = m.querySelector("#secOn"), off = m.querySelector("#secOff");
+    on && on.addEventListener("click", () => { closeModal(); showEnroll(user); });
+    off && off.addEventListener("click", async () => {
+      if (!off.dataset.sure) { off.dataset.sure = "1"; off.textContent = "Click again to turn them off"; return; }
+      off.disabled = true;
+      try {
+        await multiFactor(user).unenroll(f);
+        closeModal();
+        if (auth.currentUser) toast(null, "Security codes are off.");
+        else { show("auth"); setTab(false); $("inEmail").value = user.email || ""; formMsg("inMsg", "Security codes are off. Sign in again with just your password.", true); }
+      } catch (err) {
+        const msg = m.querySelector("#secMsg");
+        if (msg) { msg.hidden = false; msg.className = "form-msg err"; msg.textContent = err.code === "auth/requires-recent-login" ? "For your security, sign out, sign in again, then turn them off." : friendlyError(err); }
+        off.disabled = false;
+      }
+    });
+  });
+}
 
 // Create the profile the first time, then open the app.
 async function enterApp(user) {
@@ -583,7 +601,12 @@ function renderContacts() {
   const section = (key, label, items, count) => `
     <button class="group-title" data-group="${key}" aria-expanded="${!collapsed[key]}"><span class="chev">▾</span>${esc(label)} (${count})</button>
     ${collapsed[key] ? "" : items.map(contactRow).join("")}`;
-  let html = requests.filter(r => !contacts.has(r.id)).map(r => `
+  let html = !hasCodes() && local("no2fa-" + uid) !== "1" ? `
+    <div class="req">
+      <div class="r-top"><span style="font-size:22px">🔒</span><span><b>Protect your account.</b> Turn on security codes so nobody can sign in with just your password.</span></div>
+      <div class="row"><button class="btn" data-sec="on">Turn on</button><button class="btn ghost" data-sec="later">Not now</button></div>
+    </div>` : "";
+  html += requests.filter(r => !contacts.has(r.id)).map(r => `
     <div class="req">
       <div class="r-top">${dp(r.pic, "online", "sm")}<span><b>${esc(r.name)}</b> (${esc(r.email)}) added you to their contact list.</span></div>
       <div class="row"><button class="btn" data-accept="${r.id}">Add to my contacts</button><button class="btn ghost" data-ignore="${r.id}">Ignore</button></div>
@@ -1179,11 +1202,14 @@ $("signoutBtn").addEventListener("click", async () => {
   signOut(auth);
 });
 $("meDpBtn").addEventListener("click", dpModal);
+$("securityBtn").addEventListener("click", securityModal);
 $("addBtn").addEventListener("click", () => addContactModal());
 $("search").addEventListener("input", renderContacts);
 document.querySelectorAll("[data-sort]").forEach(b => b.addEventListener("click", () => { sort = b.dataset.sort; local("sort", sort); renderMe(); renderContacts(); }));
 
 $("contacts").addEventListener("click", async e => {
+  const sec = e.target.closest("[data-sec]");
+  if (sec) { if (sec.dataset.sec === "on") showEnroll(auth.currentUser); else { local("no2fa-" + uid, "1"); renderContacts(); } return; }
   const acc = e.target.closest("[data-accept]"), ign = e.target.closest("[data-ignore]");
   if (acc || ign) {
     const id = (acc || ign).dataset.accept || (acc || ign).dataset.ignore;
